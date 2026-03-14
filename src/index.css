@@ -1,0 +1,89 @@
+/* Ambimed Healthcare – Theme & base styles */
+:root {
+  --color-deep: #1D3D72;
+  --color-bright: #0078D4;
+  --color-white: #FFFFFF;
+  --color-deep-90: rgba(29, 61, 114, 0.9);
+  --color-bright-15: rgba(0, 120, 212, 0.15);
+  --color-deep-08: rgba(29, 61, 114, 0.08);
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --container: min(1200px, 100% - 2rem);
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(29, 61, 114, 0.12);
+  --shadow-lg: 0 12px 48px rgba(29, 61, 114, 0.15);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-deep);
+  background: var(--color-white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--color-bright);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.section {
+  padding: 4rem 1rem;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  color: var(--color-deep);
+  margin: 0 0 0.5rem;
+}
+
+.section-subtitle {
+  color: var(--color-bright);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 1rem;
+}
+
+.container {
+  width: var(--container);
+  margin: 0 auto;
+}
+
+::selection {
+  background: var(--color-bright-15);
+  color: var(--color-deep);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-bright);
+  outline-offset: 2px;
+}

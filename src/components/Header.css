@@ -1,0 +1,122 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+.logo:hover {
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  display: inline-block;
+}
+
+.logo-ambi { color: var(--color-deep); }
+.logo-med { color: var(--color-bright); }
+
+.nav.desktop {
+  display: none;
+}
+
+.nav.desktop .nav-link {
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--color-deep);
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.nav.desktop .nav-link:hover {
+  background: var(--color-deep-08);
+  color: var(--color-bright);
+  text-decoration: none;
+}
+
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  background: var(--color-deep);
+  border-radius: 1px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.menu-toggle span:nth-child(1).open { transform: translateY(7px) rotate(45deg); }
+.menu-toggle span:nth-child(2).open { opacity: 0; }
+.menu-toggle span:nth-child(3).open { transform: translateY(-7px) rotate(-45deg); }
+
+.nav.mobile {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 1rem;
+  overflow: hidden;
+}
+
+.nav.mobile .nav-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--color-deep);
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--color-deep-08);
+}
+
+.nav.mobile .nav-link:hover {
+  color: var(--color-bright);
+  text-decoration: none;
+}
+
+@media (min-width: 900px) {
+  .nav.desktop { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+  .menu-toggle { display: none; }
+  .nav.mobile { display: none !important; }
+}

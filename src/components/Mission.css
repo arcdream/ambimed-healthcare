@@ -1,0 +1,27 @@
+.section-mission {
+  background: var(--color-deep);
+  color: var(--color-white);
+}
+
+.mission-card {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mission-subtitle {
+  color: rgba(255,255,255,0.85);
+}
+
+.mission-title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  margin: 0 0 1rem;
+  color: var(--color-white);
+}
+
+.mission-text {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  opacity: 0.95;
+}

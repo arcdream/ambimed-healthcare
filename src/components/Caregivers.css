@@ -1,0 +1,45 @@
+.section-caregivers {
+  background: linear-gradient(180deg, var(--color-bright-15) 0%, var(--color-white) 100%);
+}
+
+.section-caregivers .section-title {
+  margin-bottom: 1.5rem;
+}
+
+.caregivers-content {
+  max-width: 720px;
+}
+
+.caregivers-image-wrap {
+  width: 100%;
+  max-width: 560px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 1.5rem;
+}
+
+.caregivers-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.caregivers-text {
+  font-size: 1.05rem;
+  color: var(--color-deep);
+  line-height: 1.65;
+  margin: 0 0 1rem;
+}
+
+.caregivers-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-deep);
+}
+
+.caregivers-list li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}

@@ -1,0 +1,51 @@
+# Ambimed Healthcare Website
+
+A React (Vite) website for **Ambimed Healthcare**—elder care, physiotherapy, home nurses, and mother & baby care at home. Elegant, trustworthy, and modular for easy editing.
+
+## Theme
+
+- **Deep blue:** `#1D3D72`
+- **Bright blue:** `#0078D4`
+- **White:** `#FFFFFF`
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
+
+## Build for production
+
+```bash
+npm run build
+npm run preview   # optional: preview the build
+```
+
+## Modular editing
+
+- **App links & contact:** Edit `src/data/config.js` for Google Play app URL, caregiver app URL, QR image paths, and contact details.
+- **Customer feedback:** Edit `src/data/testimonials.js` to add or change testimonials.
+- **Services:** Edit `src/data/services.js` for service titles and descriptions.
+- **Team:** Edit `src/data/team.js` for team members and photos.
+- **Sections:** Each section is a component in `src/components/` with its own CSS file. Add, remove, or reorder sections in `src/App.jsx`.
+
+## Assets
+
+All images live in `public/assets/`. You can replace any of these with your own photos later.
+
+- **Logo:** `ambimed-logo.png` — Ambimed logo 5 (house + nurse + arrow). Replace this file to change the logo.
+- **Hero:** `hero-caregiver-home.png` — Family welcoming caregiver at home (AI-generated placeholder).
+- **About:** `what-we-do-1.png` — Care-at-home photo (your provided image).
+- **What we do cards:** `what-we-do-1.png` (physiotherapy), `what-we-do-2.png` (mother & baby), `what-we-do-3.png` (caregiving) — your provided photos.
+- **Caregivers section:** `elder-care-home.png` — Elder care at home (AI-generated placeholder).
+- **Additional placeholders** (replace as needed): `physiotherapy-home.png`, `mother-baby-care.png`, `hero-app-booking.png`.
+- **App QR codes:** Add `qr-client-app.png` and `qr-caregiver-app.png` when ready; paths in `src/data/config.js`.
+
+## Tech stack
+
+- React 18, Vite 5
+- Framer Motion for animations
+- CSS variables for theme; no UI framework

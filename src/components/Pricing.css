@@ -1,0 +1,22 @@
+.section-pricing {
+  background: var(--color-white);
+}
+
+.section-pricing .section-title {
+  margin-bottom: 1rem;
+}
+
+.pricing-content {
+  max-width: 640px;
+}
+
+.pricing-text {
+  font-size: 1.05rem;
+  color: var(--color-deep);
+  line-height: 1.65;
+  margin: 0 0 1.5rem;
+}
+
+.pricing-cta {
+  margin-top: 1rem;
+}
