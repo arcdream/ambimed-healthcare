@@ -44,6 +44,24 @@ All images live in `public/assets/`. You can replace any of these with your own 
 - **Additional placeholders** (replace as needed): `physiotherapy-home.png`, `mother-baby-care.png`, `hero-app-booking.png`.
 - **App QR codes:** Add `qr-client-app.png` and `qr-caregiver-app.png` when ready; paths in `src/data/config.js`.
 
+## “Not secure” in the browser
+
+The app does **not** use `http://` anywhere (fonts and assets use relative paths or `https://`).  
+The “Not secure” message appears because the **page itself** is loaded over **HTTP** (e.g. `http://localhost:5173` or a server without HTTPS).
+
+- **Local:** Run with HTTPS (see below) or ignore the warning on localhost.
+- **Production:** Serve the site over **HTTPS** (your host’s SSL certificate, e.g. Let’s Encrypt). No code changes needed.
+
+### Optional: HTTPS for local dev
+
+To use `https://localhost:5173`:
+
+```bash
+npm install -D @vitejs/plugin-basic-ssl
+```
+
+Then in `vite.config.js` add the plugin and `server.https: true` (see comments in the file).
+
 ## Tech stack
 
 - React 18, Vite 5
