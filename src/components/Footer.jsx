@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { config } from '../data/config'
 
-const quickLinks = [
+const quickLinksBase = [
   { id: 'services', label: 'Services' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -9,6 +9,7 @@ const quickLinks = [
 ]
 
 export function Footer() {
+  const quickLinks = config.showAboutSection ? quickLinksBase : quickLinksBase.filter((l) => l.id !== 'about')
   const scrollTo = (id) => {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })

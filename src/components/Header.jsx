@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { config } from '../data/config'
 
 const LOGO_IMG = '/assets/ambimed-logo.png'
 
-const navLinks = [
+const navLinksBase = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
   { id: 'about', label: 'About' },
-  { id: 'what-we-do', label: 'What We Do' },
   { id: 'caregivers', label: 'Caregivers' },
   { id: 'testimonials', label: 'Feedback' },
   { id: 'apps', label: 'Our Apps' },
@@ -18,6 +18,9 @@ const navLinks = [
 export function Header() {
   const [open, setOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
+  const navLinks = navLinksBase.filter(
+    (l) => (l.id === 'about' ? config.showAboutSection : l.id === 'team' ? config.showTeamSection : true)
+  )
 
   const scrollTo = (id) => {
     const el = document.getElementById(id)

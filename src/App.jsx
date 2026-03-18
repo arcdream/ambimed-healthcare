@@ -2,8 +2,8 @@ import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { Services } from './components/Services'
 import { About } from './components/About'
-import { WhatWeDo } from './components/WhatWeDo'
 import { Caregivers } from './components/Caregivers'
+import { config } from './data/config'
 import { Pricing } from './components/Pricing'
 import { Mission } from './components/Mission'
 import { Testimonials } from './components/Testimonials'
@@ -16,7 +16,6 @@ import './components/Header.css'
 import './components/Hero.css'
 import './components/Services.css'
 import './components/About.css'
-import './components/WhatWeDo.css'
 import './components/Caregivers.css'
 import './components/Pricing.css'
 import './components/Mission.css'
@@ -33,14 +32,13 @@ function App() {
       <main>
         <Hero />
         <Services />
-        <About />
-        <WhatWeDo />
+        {config.showAboutSection && <About />}
         <Caregivers />
         <Pricing />
         <Mission />
         <Testimonials />
         <Apps />
-        <Team />
+        {config.showTeamSection && <Team />}
         <Contact />
       </main>
       <Footer />
