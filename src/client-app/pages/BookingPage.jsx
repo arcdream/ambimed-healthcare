@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useAuth } from '../context/AuthContext'
 import { useMetadata } from '../context/MetadataContext'
 import { addressService } from '../services/addressService'
+import { clearPendingBookingDraft, getPendingBookingDraft, savePendingBookingDraft } from '../lib/pendingBooking'
 
 const TIME_SLOTS = [
   '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
@@ -17,8 +18,9 @@ function formatAddressLine(a) {
 export function BookingPage() {
   const { serviceId } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const { services } = useMetadata()
+  const location = useLocation()
+  const { user, isLoading: authLoading } = useAuth()
+  const { services, loading: metaLoading } = useMetadata()
 
   const service = services.find((s) => s.id === serviceId)
   const subtypes = service?.subtypes ?? []
@@ -40,7 +42,12 @@ export function BookingPage() {
     pincode: '',
   })
   const [savingAddr, setSavingAddr] = useState(false)
+  const resumeHydratedRef = useRef(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    resumeHydratedRef.current = false
+  }, [serviceId])
 
   const minBookingDays = Math.max(1, service?.minimumBookingDays ?? 1)
   const minimumEndDate = dayjs(startDate).add(minBookingDays - 1, 'day').format('YYYY-MM-DD')
@@ -55,8 +62,35 @@ export function BookingPage() {
     }
   }, [minBookingDays, startDate, minimumEndDate, endDate])
 
+  /** After sign-in, restore guest’s choices from sessionStorage (visit address is added below). */
   useEffect(() => {
-    if (!user?.id) return
+    if (!user?.id || !service || subtypes.length === 0 || resumeHydratedRef.current) return
+    if (!location.state?.resumeBooking) return
+    const draft = getPendingBookingDraft()
+    if (!draft || String(draft.serviceTypeId) !== String(service.id)) return
+    if (draft.addressId || (draft.addressDisplay && draft.addressDisplay.trim())) return
+
+    const sub = subtypes.find((s) => String(s.id) === String(draft.serviceId))
+    if (sub) setSelectedSubtype(sub)
+    if (draft.genderPreference === 'male' || draft.genderPreference === 'female') {
+      setGenderPreference(draft.genderPreference)
+    }
+    if (draft.startDate) setStartDate(draft.startDate)
+    if (draft.endDate) setEndDate(draft.endDate)
+    if (draft.startTime) setStartTime(draft.startTime)
+    if (draft.notes != null) setNotes(draft.notes)
+
+    resumeHydratedRef.current = true
+    navigate(location.pathname, { replace: true, state: {} })
+  }, [user?.id, service?.id, subtypes.length, location.pathname, location.state?.resumeBooking, navigate])
+
+  useEffect(() => {
+    if (!user?.id) {
+      setAddresses([])
+      setSelectedAddress(null)
+      setAddressesLoading(false)
+      return
+    }
     let c = false
     ;(async () => {
       setAddressesLoading(true)
@@ -112,6 +146,19 @@ export function BookingPage() {
     }
   }
 
+  const buildReviewPayload = () => ({
+    serviceId: selectedSubtype.id,
+    serviceTypeId: service.id,
+    serviceName: selectedSubtype.userFriendlyName,
+    servicesOffered: selectedSubtype.servicesOffered || [],
+    genderPreference: genderPreference || '',
+    startDate,
+    endDate,
+    startTime,
+    endTime: startTime,
+    notes,
+  })
+
   const goReview = () => {
     setError('')
     if (!selectedSubtype) {
@@ -122,26 +169,37 @@ export function BookingPage() {
       setError('Select caregiver gender preference.')
       return
     }
-    if (!selectedAddress) {
-      setError('Select an address for the visit.')
+
+    const base = buildReviewPayload()
+
+    if (user?.id) {
+      if (!selectedAddress) {
+        setError('Select an address for the visit.')
+        return
+      }
+      clearPendingBookingDraft()
+      navigate('/app/book/review', {
+        state: {
+          ...base,
+          addressId: selectedAddress.id,
+          addressDisplay: formatAddressLine(selectedAddress),
+        },
+      })
       return
     }
-    navigate('/app/book/review', {
-      state: {
-        serviceId: selectedSubtype.id,
-        serviceTypeId: service.id,
-        serviceName: selectedSubtype.userFriendlyName,
-        servicesOffered: selectedSubtype.servicesOffered || [],
-        genderPreference: genderPreference || '',
-        startDate,
-        endDate,
-        startTime,
-        endTime: startTime,
-        notes,
-        addressId: selectedAddress.id,
-        addressDisplay: formatAddressLine(selectedAddress),
-      },
+
+    savePendingBookingDraft({
+      ...base,
     })
+    navigate('/app/login', { state: { from: `/app/book/${service.id}`, reason: 'booking' } })
+  }
+
+  if (metaLoading || authLoading) {
+    return (
+      <div className="client-app-card">
+        <p className="muted">Loading…</p>
+      </div>
+    )
   }
 
   if (!service) {
@@ -162,6 +220,8 @@ export function BookingPage() {
     )
   }
 
+  const reviewCtaLabel = user?.id ? 'Review booking' : 'Continue to sign in'
+
   return (
     <div>
       <div className="client-app-card">
@@ -170,6 +230,11 @@ export function BookingPage() {
         </Link>
         <h1 style={{ marginTop: '0.5rem' }}>{service.name}</h1>
         <p className="muted">{service.description}</p>
+        {!user?.id && (
+          <p className="muted" style={{ marginTop: '0.75rem' }}>
+            Choose your options, then sign in. You’ll add your visit address on the next step before review.
+          </p>
+        )}
       </div>
 
       <div className="client-app-card">
@@ -241,61 +306,63 @@ export function BookingPage() {
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Requirements for the visit…" />
       </div>
 
-      <div className="client-app-card">
-        <h2>Visit address</h2>
-        {addressesLoading ? (
-          <p className="muted">Loading addresses…</p>
-        ) : addresses.length === 0 && !showAddressForm ? (
-          <>
-            <p className="muted">No address saved. Add one to continue.</p>
-            <button type="button" className="btn btn-primary" onClick={() => setShowAddressForm(true)}>
-              Add address
-            </button>
-          </>
-        ) : (
-          <>
-            {addresses.map((addr) => (
-              <button
-                key={addr.id}
-                type="button"
-                className={`addr-option ${selectedAddress?.id === addr.id ? 'selected' : ''}`}
-                onClick={() => setSelectedAddress(addr)}
-              >
-                <span>{selectedAddress?.id === addr.id ? '●' : '○'}</span>
-                <span>{formatAddressLine(addr)}</span>
+      {user?.id && (
+        <div className="client-app-card">
+          <h2>Visit address</h2>
+          {addressesLoading ? (
+            <p className="muted">Loading addresses…</p>
+          ) : addresses.length === 0 && !showAddressForm ? (
+            <>
+              <p className="muted">No address saved. Add one to continue.</p>
+              <button type="button" className="btn btn-primary" onClick={() => setShowAddressForm(true)}>
+                Add address
               </button>
-            ))}
-            <button type="button" className="btn btn-outline" style={{ marginTop: '0.5rem' }} onClick={() => setShowAddressForm(true)}>
-              + Add another address
-            </button>
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              {addresses.map((addr) => (
+                <button
+                  key={addr.id}
+                  type="button"
+                  className={`addr-option ${selectedAddress?.id === addr.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedAddress(addr)}
+                >
+                  <span>{selectedAddress?.id === addr.id ? '●' : '○'}</span>
+                  <span>{formatAddressLine(addr)}</span>
+                </button>
+              ))}
+              <button type="button" className="btn btn-outline" style={{ marginTop: '0.5rem' }} onClick={() => setShowAddressForm(true)}>
+                + Add another address
+              </button>
+            </>
+          )}
 
-        {showAddressForm && (
-          <form onSubmit={saveNewAddress} style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-            <label>House / flat</label>
-            <input value={newAddr.houseAddress} onChange={(e) => setNewAddr((p) => ({ ...p, houseAddress: e.target.value }))} required />
-            <label>Street</label>
-            <input value={newAddr.streetAddress} onChange={(e) => setNewAddr((p) => ({ ...p, streetAddress: e.target.value }))} />
-            <label>City</label>
-            <input value={newAddr.city} onChange={(e) => setNewAddr((p) => ({ ...p, city: e.target.value }))} required />
-            <label>State</label>
-            <input value={newAddr.state} onChange={(e) => setNewAddr((p) => ({ ...p, state: e.target.value }))} required />
-            <label>Pincode</label>
-            <input value={newAddr.pincode} onChange={(e) => setNewAddr((p) => ({ ...p, pincode: e.target.value }))} required />
-            <button type="submit" className="btn btn-primary" disabled={savingAddr}>
-              {savingAddr ? 'Saving…' : 'Save address'}
-            </button>
-            <button type="button" className="btn btn-outline" style={{ marginLeft: '0.5rem' }} onClick={() => setShowAddressForm(false)}>
-              Cancel
-            </button>
-          </form>
-        )}
-      </div>
+          {showAddressForm && (
+            <form onSubmit={saveNewAddress} style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+              <label>House / flat</label>
+              <input value={newAddr.houseAddress} onChange={(e) => setNewAddr((p) => ({ ...p, houseAddress: e.target.value }))} required />
+              <label>Street</label>
+              <input value={newAddr.streetAddress} onChange={(e) => setNewAddr((p) => ({ ...p, streetAddress: e.target.value }))} />
+              <label>City</label>
+              <input value={newAddr.city} onChange={(e) => setNewAddr((p) => ({ ...p, city: e.target.value }))} required />
+              <label>State</label>
+              <input value={newAddr.state} onChange={(e) => setNewAddr((p) => ({ ...p, state: e.target.value }))} required />
+              <label>Pincode</label>
+              <input value={newAddr.pincode} onChange={(e) => setNewAddr((p) => ({ ...p, pincode: e.target.value }))} required />
+              <button type="submit" className="btn btn-primary" disabled={savingAddr}>
+                {savingAddr ? 'Saving…' : 'Save address'}
+              </button>
+              <button type="button" className="btn btn-outline" style={{ marginLeft: '0.5rem' }} onClick={() => setShowAddressForm(false)}>
+                Cancel
+              </button>
+            </form>
+          )}
+        </div>
+      )}
 
       {error && <div className="error">{error}</div>}
       <button type="button" className="btn btn-primary" style={{ width: '100%' }} onClick={goReview}>
-        Review booking
+        {reviewCtaLabel}
       </button>
     </div>
   )

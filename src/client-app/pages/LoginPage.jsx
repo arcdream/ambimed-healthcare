@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { authService } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
 import { supabaseConfigured } from '../lib/supabase'
 import { TERMS_PDF_URL } from '../../data/legal'
+import { clearPendingBookingDraft, getPendingBookingDraft } from '../lib/pendingBooking'
 
 export function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [step, setStep] = useState('phone')
@@ -63,8 +65,17 @@ export function LoginPage() {
     setLoading(true)
     try {
       const r = await login(phone, otp)
-      if (r.success) navigate('/app/home', { replace: true })
-      else setError(r.message || 'Invalid OTP')
+      if (r.success) {
+        const draft = getPendingBookingDraft()
+        const resumingBooking = location.state?.reason === 'booking' && draft
+        if (resumingBooking) {
+          navigate(`/app/book/${draft.serviceTypeId}`, { replace: true, state: { resumeBooking: true } })
+        } else {
+          if (draft) clearPendingBookingDraft()
+          const from = location.state?.from
+          navigate(typeof from === 'string' && from.startsWith('/app') ? from : '/app/home', { replace: true })
+        }
+      } else setError(r.message || 'Invalid OTP')
     } finally {
       setLoading(false)
     }
@@ -76,8 +87,12 @@ export function LoginPage() {
         <div className="login-hero-icon" aria-hidden>
           ✓
         </div>
-        <h1>Sign in to book care</h1>
-        <p>Use the same phone number as your Ambimed app — your profile and bookings stay in sync.</p>
+        <h1>{location.state?.reason === 'booking' ? 'Sign in to continue your booking' : 'Sign in to book care'}</h1>
+        <p>
+          {location.state?.reason === 'booking'
+            ? 'After verification, you’ll add your visit address, then review and confirm.'
+            : 'Use the same phone number as your Ambimed app — your profile and bookings stay in sync.'}
+        </p>
       </div>
 
       <div className="login-card client-app">

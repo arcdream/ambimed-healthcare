@@ -9,29 +9,32 @@ export function AppHomePage() {
   const { user } = useAuth()
   const { services, loading: metaLoading } = useMetadata()
   const [upcoming, setUpcoming] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [upcomingLoading, setUpcomingLoading] = useState(false)
 
-  const load = useCallback(async () => {
-    if (!user?.id) return
-    setLoading(true)
+  const loadUpcoming = useCallback(async () => {
+    if (!user?.id) {
+      setUpcoming(null)
+      return
+    }
+    setUpcomingLoading(true)
     try {
       const list = await bookingService.getUpcomingBookings(user.id)
       setUpcoming(list[0] ?? null)
     } catch (e) {
       console.error(e)
     } finally {
-      setLoading(false)
+      setUpcomingLoading(false)
     }
   }, [user?.id])
 
   useEffect(() => {
-    load()
-  }, [load])
+    loadUpcoming()
+  }, [loadUpcoming])
 
-  if (metaLoading || loading) {
+  if (metaLoading) {
     return (
       <div className="client-app-card">
-        <p className="muted">Loading your dashboard…</p>
+        <p className="muted">Loading services…</p>
       </div>
     )
   }
@@ -39,12 +42,22 @@ export function AppHomePage() {
   return (
     <div>
       <div className="client-app-card app-dashboard-welcome">
-        <p className="app-dashboard-kicker">Your care dashboard</p>
-        <h1>Welcome back{user?.firstName ? `, ${user.firstName}` : ''}</h1>
-        <p className="muted">Book home care the same way as in the Ambimed app — one account for web and mobile.</p>
+        <p className="app-dashboard-kicker">{user?.id ? 'Your care dashboard' : 'Book care'}</p>
+        <h1>{user?.id ? `Welcome back${user?.firstName ? `, ${user.firstName}` : ''}` : 'Home healthcare, on your schedule'}</h1>
+        <p className="muted">
+          {user?.id
+            ? 'Book home care the same way as in the Ambimed app — one account for web and mobile.'
+            : 'Browse services and build a booking. Sign in when you’re ready to review and confirm.'}
+        </p>
       </div>
 
-      {upcoming && (
+      {user?.id && upcomingLoading && (
+        <div className="client-app-card">
+          <p className="muted">Loading your bookings…</p>
+        </div>
+      )}
+
+      {user?.id && !upcomingLoading && upcoming && (
         <div className="client-app-card">
           <h2>Next booking</h2>
           <p>

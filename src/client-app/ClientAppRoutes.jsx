@@ -15,9 +15,9 @@ export function ClientAppRoutes() {
       <Route element={<AppShell />}>
         <Route index element={<AppEntry />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="home" element={<AppHomePage />} />
+        <Route path="book/:serviceId" element={<BookingPage />} />
         <Route element={<RequireAuth />}>
-          <Route path="home" element={<AppHomePage />} />
-          <Route path="book/:serviceId" element={<BookingPage />} />
           <Route path="book/review" element={<ReviewPage />} />
           <Route path="history" element={<HistoryPage />} />
         </Route>

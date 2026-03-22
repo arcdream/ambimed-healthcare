@@ -4,14 +4,17 @@ import dayjs from 'dayjs'
 import { useAuth } from '../context/AuthContext'
 import { useMetadata } from '../context/MetadataContext'
 import { bookingService } from '../services/bookingService'
+import { addressService } from '../services/addressService'
 import { fetchDiscountForClient } from '../services/discountService'
+import { clearPendingBookingDraft, getPendingBookingDraft } from '../lib/pendingBooking'
 
 export function ReviewPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
   const { services } = useMetadata()
-  const params = location.state
+
+  const params = location.state ?? getPendingBookingDraft()
 
   const [loading, setLoading] = useState(false)
   const [discount, setDiscount] = useState(null)
@@ -25,8 +28,8 @@ export function ReviewPage() {
   if (!params) {
     return (
       <div className="client-app-card">
-        <p>Nothing to review. Start a booking from the app home.</p>
-        <Link to="/app/home">← App home</Link>
+        <p>Nothing to review. Start a booking from Book care.</p>
+        <Link to="/app/home">← Book care</Link>
       </div>
     )
   }
@@ -44,7 +47,20 @@ export function ReviewPage() {
     notes,
     addressId,
     addressDisplay,
+    addressDraft,
   } = params
+
+  const hasAddressForBooking =
+    !!addressId || !!addressDraft || !!(addressDisplay && String(addressDisplay).trim())
+
+  if (!hasAddressForBooking) {
+    return (
+      <div className="client-app-card">
+        <p>Your booking needs a visit address before you can review it.</p>
+        <Link to={serviceTypeId ? `/app/book/${serviceTypeId}` : '/app/home'}>← Continue booking</Link>
+      </div>
+    )
+  }
 
   const startStr = dayjs(startDate).format('YYYY-MM-DD')
   const endStr = dayjs(endDate).format('YYYY-MM-DD')
@@ -61,6 +77,38 @@ export function ReviewPage() {
     setError('')
     setLoading(true)
     try {
+      let resolvedAddressId = addressId
+
+      if (addressDraft && !resolvedAddressId) {
+        const { houseAddress, city, state, pincode } = addressDraft
+        if (!houseAddress?.trim() || !city?.trim() || !state?.trim() || !pincode?.trim()) {
+          setError('Address is incomplete. Go back and update your visit address.')
+          setLoading(false)
+          return
+        }
+        const addrRes = await addressService.createAddress(user.id, {
+          houseAddress: houseAddress.trim(),
+          streetAddress: addressDraft.streetAddress?.trim() || '',
+          city: city.trim(),
+          state: state.trim(),
+          country: addressDraft.country || 'India',
+          pincode: pincode.trim(),
+          isPrimary: true,
+        })
+        if (!addrRes.success || !addrRes.address) {
+          setError(addrRes.message || 'Could not save address')
+          setLoading(false)
+          return
+        }
+        resolvedAddressId = addrRes.address.id
+      }
+
+      if (!resolvedAddressId) {
+        setError('Please select an address for the visit.')
+        setLoading(false)
+        return
+      }
+
       const response = await bookingService.createBooking({
         userId: user.id,
         serviceId,
@@ -72,9 +120,10 @@ export function ReviewPage() {
         startTime,
         endTime,
         notes: notes || '',
-        addressId,
+        addressId: resolvedAddressId,
       })
       if (response.success) {
+        clearPendingBookingDraft()
         navigate('/app/history', { replace: true, state: { booked: true } })
       } else {
         setError(response.message || 'Booking failed')
@@ -141,7 +190,12 @@ export function ReviewPage() {
 
       <div className="client-app-card">
         <h2>Address</h2>
-        <p>{addressDisplay}</p>
+        <p>{addressDisplay || '—'}</p>
+        {addressDraft && !addressId && (
+          <p className="muted" style={{ marginTop: '0.5rem' }}>
+            This address will be saved to your account when you confirm.
+          </p>
+        )}
       </div>
 
       {notes && (
