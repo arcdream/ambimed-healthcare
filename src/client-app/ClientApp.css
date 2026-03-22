@@ -225,6 +225,41 @@
   color: var(--color-bright);
 }
 
+.login-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.login-terms-checkbox {
+  width: auto !important;
+  margin: 0.2rem 0 0 !important;
+  flex-shrink: 0;
+  accent-color: var(--color-bright);
+  cursor: pointer;
+}
+
+.login-terms-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(29, 61, 114, 0.88);
+  cursor: pointer;
+  margin: 0;
+}
+
+.login-terms-label a {
+  color: var(--color-bright);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-terms-label a:hover {
+  color: var(--color-deep);
+}
+
 .client-app-card {
   background: #fff;
   border-radius: 12px;

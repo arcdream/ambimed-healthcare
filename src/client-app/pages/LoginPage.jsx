@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { authService } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
 import { supabaseConfigured } from '../lib/supabase'
+import { TERMS_PDF_URL } from '../../data/legal'
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -10,6 +11,7 @@ export function LoginPage() {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [step, setStep] = useState('phone')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -39,6 +41,10 @@ export function LoginPage() {
   const sendOtp = async (e) => {
     e.preventDefault()
     setError('')
+    if (!acceptedTerms) {
+      setError('Please accept the terms and conditions to continue.')
+      return
+    }
     setLoading(true)
     try {
       const r = await authService.sendOtp(phone)
@@ -93,7 +99,28 @@ export function LoginPage() {
               autoComplete="tel"
               required
             />
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+            <div className="login-terms">
+              <input
+                id="accept-terms"
+                type="checkbox"
+                className="login-terms-checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+              />
+              <label htmlFor="accept-terms" className="login-terms-label">
+                I agree to the{' '}
+                <a href={TERMS_PDF_URL} target="_blank" rel="noopener noreferrer">
+                  terms &amp; conditions
+                </a>{' '}
+                and understand how Ambimed uses my information for booking and care coordination.
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%' }}
+              disabled={loading || !acceptedTerms}
+            >
               {loading ? 'Sending code…' : 'Send verification code'}
             </button>
           </form>
