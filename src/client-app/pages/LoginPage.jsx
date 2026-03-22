@@ -1,0 +1,146 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { authService } from '../services/authService'
+import { useAuth } from '../context/AuthContext'
+import { supabaseConfigured } from '../lib/supabase'
+
+export function LoginPage() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState('')
+  const [step, setStep] = useState('phone')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  if (!supabaseConfigured) {
+    return (
+      <div className="login-page">
+        <div className="login-hero">
+          <div className="login-hero-icon" aria-hidden>
+            ⚙
+          </div>
+          <h1>Client app unavailable</h1>
+          <p>Add your Supabase keys to enable secure sign-in.</p>
+        </div>
+        <div className="login-card">
+          <p className="muted" style={{ margin: 0 }}>
+            Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> to your <code>.env</code> file
+            (same as the Ambimed mobile app). Then restart the dev server.
+          </p>
+        </div>
+        <p className="login-back">
+          <Link to="/">← Back to website</Link>
+        </p>
+      </div>
+    )
+  }
+
+  const sendOtp = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const r = await authService.sendOtp(phone)
+      if (r.success) setStep('otp')
+      else setError(r.message || 'Failed to send OTP')
+    } catch {
+      setError('Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const verify = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const r = await login(phone, otp)
+      if (r.success) navigate('/app/home', { replace: true })
+      else setError(r.message || 'Invalid OTP')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="login-page">
+      <div className="login-hero">
+        <div className="login-hero-icon" aria-hidden>
+          ✓
+        </div>
+        <h1>Sign in to book care</h1>
+        <p>Use the same phone number as your Ambimed app — your profile and bookings stay in sync.</p>
+      </div>
+
+      <div className="login-card client-app">
+        <div className="login-steps" role="status" aria-live="polite">
+          <span className={`login-step${step === 'phone' ? ' active' : ''}`}>1. Phone</span>
+          <span className={`login-step${step === 'otp' ? ' active' : ''}`}>2. OTP</span>
+        </div>
+
+        {step === 'phone' ? (
+          <form onSubmit={sendOtp}>
+            {error && <div className="error">{error}</div>}
+            <label htmlFor="phone">Mobile number</label>
+            <input
+              id="phone"
+              type="tel"
+              placeholder="10-digit mobile or +91…"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+              required
+            />
+            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+              {loading ? 'Sending code…' : 'Send verification code'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={verify}>
+            {error && <div className="error">{error}</div>}
+            <label htmlFor="otp">Enter the code we sent</label>
+            <input
+              id="otp"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="••••••"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button type="submit" className="btn btn-primary" style={{ flex: '1 1 140px' }} disabled={loading}>
+                {loading ? 'Verifying…' : 'Verify & continue'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ flex: '1 1 120px' }}
+                onClick={() => {
+                  setStep('phone')
+                  setOtp('')
+                }}
+              >
+                Change number
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="login-trust">
+          <span aria-hidden>🔒</span>
+          <span>
+            <strong>Secure OTP sign-in.</strong> We never post your number publicly. Need help? Use the same account as
+            the mobile app.
+          </span>
+        </div>
+      </div>
+
+      <p className="login-back">
+        <Link to="/">← Back to website</Link>
+      </p>
+    </div>
+  )
+}

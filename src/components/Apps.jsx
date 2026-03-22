@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { config } from '../data/config'
 import './Apps.css'
 
@@ -34,6 +35,10 @@ export function Apps() {
             <p className="app-card-desc">
               Book elder care, physiotherapy, home nurses, and mother & baby care. Easy booking,
               transparent billing, trusted care at home.
+            </p>
+            <p className="app-web-cta">
+              <Link to="/app" className="app-web-link">Book on the web →</Link>
+              <span className="app-note"> Same account as the mobile app.</span>
             </p>
             <div className="app-card-qr">
               <img

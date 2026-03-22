@@ -1,49 +1,25 @@
-import { Header } from './components/Header'
-import { Hero } from './components/Hero'
-import { Services } from './components/Services'
-import { About } from './components/About'
-import { Caregivers } from './components/Caregivers'
-import { config } from './data/config'
-import { Pricing } from './components/Pricing'
-import { Mission } from './components/Mission'
-import { Testimonials } from './components/Testimonials'
-import { Apps } from './components/Apps'
-import { Team } from './components/Team'
-import { Contact } from './components/Contact'
-import { Footer } from './components/Footer'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import MarketingSite from './MarketingSite.jsx'
+import { AuthProvider } from './client-app/context/AuthContext.jsx'
+import { ClientAppProviders } from './client-app/ClientAppProviders.jsx'
+import { ClientAppRoutes } from './client-app/ClientAppRoutes.jsx'
 
-import './components/Header.css'
-import './components/Hero.css'
-import './components/Services.css'
-import './components/About.css'
-import './components/Caregivers.css'
-import './components/Pricing.css'
-import './components/Mission.css'
-import './components/Testimonials.css'
-import './components/Apps.css'
-import './components/Team.css'
-import './components/Contact.css'
-import './components/Footer.css'
-
-function App() {
+export default function App() {
   return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        {config.showAboutSection && <About />}
-        <Caregivers />
-        <Pricing />
-        <Mission />
-        <Testimonials />
-        <Apps />
-        {config.showTeamSection && <Team />}
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/app/*"
+            element={
+              <ClientAppProviders>
+                <ClientAppRoutes />
+              </ClientAppProviders>
+            }
+          />
+          <Route path="/*" element={<MarketingSite />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
-
-export default App

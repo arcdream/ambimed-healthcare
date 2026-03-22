@@ -40,6 +40,21 @@
   line-height: 1.55;
 }
 
+.app-web-cta {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.app-web-link {
+  font-weight: 700;
+  color: var(--color-bright);
+  text-decoration: none;
+}
+
+.app-web-link:hover {
+  text-decoration: underline;
+}
+
 .app-card-qr {
   width: 120px;
   height: 120px;
