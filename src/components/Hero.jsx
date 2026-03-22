@@ -33,10 +33,10 @@ export function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.45 }}
               >
-                <Link to="/app/home" className="btn btn-primary">
+                <Link to="/app/booking" className="btn btn-primary">
                   Open dashboard
                 </Link>
-                <Link to="/app" className="btn btn-secondary">
+                <Link to="/app/booking" className="btn btn-secondary">
                   Book new care
                 </Link>
               </motion.div>
@@ -57,7 +57,7 @@ export function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <Link to="/app" className="btn btn-primary">
+                <Link to="/app/booking" className="btn btn-primary">
                   Book care
                 </Link>
                 <a

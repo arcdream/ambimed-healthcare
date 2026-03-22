@@ -29,7 +29,7 @@ export function ReviewPage() {
     return (
       <div className="client-app-card">
         <p>Nothing to review. Start a booking from Book care.</p>
-        <Link to="/app/home">← Book care</Link>
+        <Link to="/app/booking">← Book care</Link>
       </div>
     )
   }
@@ -57,7 +57,7 @@ export function ReviewPage() {
     return (
       <div className="client-app-card">
         <p>Your booking needs a visit address before you can review it.</p>
-        <Link to={serviceTypeId ? `/app/book/${serviceTypeId}` : '/app/home'}>← Continue booking</Link>
+        <Link to={serviceTypeId ? `/app/book/${serviceTypeId}` : '/app/booking'}>← Continue booking</Link>
       </div>
     )
   }

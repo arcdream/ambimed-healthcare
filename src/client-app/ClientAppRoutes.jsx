@@ -15,13 +15,14 @@ export function ClientAppRoutes() {
       <Route element={<AppShell />}>
         <Route index element={<AppEntry />} />
         <Route path="login" element={<LoginPage />} />
-        <Route path="home" element={<AppHomePage />} />
+        <Route path="booking" element={<AppHomePage />} />
+        <Route path="home" element={<Navigate to="/app/booking" replace />} />
         <Route path="book/:serviceId" element={<BookingPage />} />
         <Route element={<RequireAuth />}>
           <Route path="book/review" element={<ReviewPage />} />
           <Route path="history" element={<HistoryPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/app" replace />} />
+        <Route path="*" element={<Navigate to="/app/booking" replace />} />
       </Route>
     </Routes>
   )

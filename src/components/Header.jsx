@@ -21,7 +21,7 @@ const appNavLinks = [
   { to: '/', label: 'Website home' },
   { to: '/#services', label: 'Services' },
   { to: '/#contact', label: 'Contact' },
-  { to: '/app/home', label: 'Book care' },
+  { to: '/app/booking', label: 'Book care' },
   { to: '/app/history', label: 'My bookings' },
 ]
 
@@ -89,7 +89,7 @@ export function Header() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.15 }}
               >
-                <Link to="/app/home" onClick={() => setUserMenuOpen(false)}>
+                <Link to="/app/booking" onClick={() => setUserMenuOpen(false)}>
                   Book care
                 </Link>
                 <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
@@ -141,7 +141,7 @@ export function Header() {
                 </button>
               ))}
           {!isApp && (
-            <Link to="/app" className="nav-link nav-link--cta">
+            <Link to="/app/booking" className="nav-link nav-link--cta">
               Book care
             </Link>
           )}
@@ -183,7 +183,7 @@ export function Header() {
                   </button>
                 ))}
             {!isApp && (
-              <Link to="/app" className="nav-link nav-link--cta" onClick={() => setOpen(false)}>
+              <Link to="/app/booking" className="nav-link nav-link--cta" onClick={() => setOpen(false)}>
                 Book care
               </Link>
             )}
@@ -194,7 +194,7 @@ export function Header() {
             )}
             {!isLoading && isAuthenticated && (
               <>
-                <Link to="/app/home" className="nav-link" onClick={() => setOpen(false)}>
+                <Link to="/app/booking" className="nav-link" onClick={() => setOpen(false)}>
                   Book care (dashboard)
                 </Link>
                 <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>

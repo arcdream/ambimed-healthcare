@@ -165,14 +165,20 @@ export function BookingPage() {
       setError('Select a shift option.')
       return
     }
-    if (service?.hasGenderPreference && !genderPreference) {
-      setError('Select caregiver gender preference.')
-      return
+    if (service?.hasGenderPreference) {
+      if (genderPreference !== 'male' && genderPreference !== 'female') {
+        setError('Select caregiver gender preference — Male or Female is required.')
+        return
+      }
     }
 
     const base = buildReviewPayload()
 
     if (user?.id) {
+      if (addressesLoading) {
+        setError('Loading addresses… please wait a moment.')
+        return
+      }
       if (!selectedAddress) {
         setError('Select an address for the visit.')
         return
@@ -206,7 +212,7 @@ export function BookingPage() {
     return (
       <div className="client-app-card">
         <p>Service not found.</p>
-        <Link to="/app/home">← Back</Link>
+        <Link to="/app/booking">← Back</Link>
       </div>
     )
   }
@@ -215,7 +221,7 @@ export function BookingPage() {
     return (
       <div className="client-app-card">
         <p>No booking options for this service.</p>
-        <Link to="/app/home">← Back</Link>
+        <Link to="/app/booking">← Back</Link>
       </div>
     )
   }
@@ -225,7 +231,7 @@ export function BookingPage() {
   return (
     <div>
       <div className="client-app-card">
-        <Link to="/app/home" className="muted">
+        <Link to="/app/booking" className="muted">
           ← Back
         </Link>
         <h1 style={{ marginTop: '0.5rem' }}>{service.name}</h1>

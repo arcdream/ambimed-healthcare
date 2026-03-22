@@ -73,7 +73,7 @@ export function LoginPage() {
         } else {
           if (draft) clearPendingBookingDraft()
           const from = location.state?.from
-          navigate(typeof from === 'string' && from.startsWith('/app') ? from : '/app/home', { replace: true })
+          navigate(typeof from === 'string' && from.startsWith('/app') ? from : '/app/booking', { replace: true })
         }
       } else setError(r.message || 'Invalid OTP')
     } finally {

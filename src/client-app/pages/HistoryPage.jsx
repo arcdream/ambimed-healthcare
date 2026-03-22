@@ -37,7 +37,7 @@ export function HistoryPage() {
   return (
     <div>
       <div className="client-app-card">
-        <Link to="/app/home" className="muted">
+        <Link to="/app/booking" className="muted">
           ← Home
         </Link>
         <h1 style={{ marginTop: '0.5rem' }}>My bookings</h1>
@@ -46,7 +46,7 @@ export function HistoryPage() {
       {bookings.length === 0 ? (
         <div className="client-app-card">
           <p className="muted">No bookings yet.</p>
-          <Link to="/app/home">Book a service</Link>
+          <Link to="/app/booking">Book a service</Link>
         </div>
       ) : (
         bookings.map((b) => (

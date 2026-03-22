@@ -37,7 +37,7 @@ export function Apps() {
               transparent billing, trusted care at home.
             </p>
             <p className="app-web-cta">
-              <Link to="/app" className="app-web-link">Book on the web →</Link>
+              <Link to="/app/booking" className="app-web-link">Book on the web →</Link>
               <span className="app-note"> Same account as the mobile app.</span>
             </p>
             <div className="app-card-qr">

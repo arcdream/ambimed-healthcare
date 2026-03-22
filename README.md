@@ -18,7 +18,7 @@ The public marketing site stays at **`/`**. The **client booking experience** (s
 2. Restart `npm run dev`
 3. Open **http://localhost:5173/app** – sign in with the same phone as the app (client profile required).
 
-**Routes:** `/app` → login or home · `/app/login` · `/app/home` · `/app/book/:serviceTypeId` · `/app/book/review` · `/app/history`
+**Routes:** `/app` → booking home · `/app/login` · `/app/booking` · `/app/book/:serviceTypeId` · `/app/book/review` · `/app/history` (legacy `/app/home` redirects to `/app/booking`)
 
 Deploying the built site to static hosting: configure the server to **serve `index.html` for all routes** (SPA fallback) so `/app/...` works.
 
