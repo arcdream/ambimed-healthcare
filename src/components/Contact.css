@@ -55,5 +55,5 @@
 }
 
 @media (min-width: 700px) {
-  .contact-grid { grid-template-columns: repeat(3, 1fr); }
+  .contact-grid { grid-template-columns: repeat(2, 1fr); }
 }

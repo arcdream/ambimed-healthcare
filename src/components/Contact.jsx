@@ -43,10 +43,6 @@ export function Contact() {
                 {CONTACT.email}
               </a>
             </div>
-            <div className="contact-item">
-              <span className="contact-label">Address</span>
-              <p className="contact-value contact-address">{CONTACT.address}</p>
-            </div>
           </div>
           <p className="contact-note">
             For bookings and enquiries, call or email us. We’re here to help you arrange

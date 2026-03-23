@@ -1,9 +1,13 @@
 /**
  * Services offered – edit this file to update services on the website.
+ *
+ * `bookingServiceTypeId` must match `service_types.id` in Supabase (same id used in /app/book/:serviceId).
+ * Update these values if your database uses different ids.
  */
 export const services = [
   {
     id: 'elder-care',
+    bookingServiceTypeId: '1',
     title: 'Elder Care',
     description: 'Compassionate, professional care for seniors at home. Daily assistance, companionship, and medication support.',
     icon: 'elder',
@@ -11,6 +15,7 @@ export const services = [
   },
   {
     id: 'physiotherapy',
+    bookingServiceTypeId: '2',
     title: 'Physiotherapy',
     description: 'Home physiotherapy made easy. Trained physiotherapists for rehabilitation and mobility at your convenience.',
     icon: 'physio',
@@ -18,6 +23,7 @@ export const services = [
   },
   {
     id: 'home-nurses',
+    bookingServiceTypeId: '3',
     title: 'Home Nurses',
     description: 'Skilled nursing care at home—post-surgery, palliative care, and general nursing when you need it.',
     icon: 'nurse',
@@ -25,6 +31,7 @@ export const services = [
   },
   {
     id: 'mother-baby',
+    bookingServiceTypeId: '4',
     title: 'Mother & Baby Care',
     description: 'Postnatal and newborn care at home. Experienced caregivers for mother and baby wellness.',
     icon: 'baby',
