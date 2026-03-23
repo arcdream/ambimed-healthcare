@@ -6,9 +6,9 @@
  */
 export const services = [
   {
-    id: 'elder-care',
-    bookingServiceTypeId: '1',
-    title: 'Elder Care',
+    id: 'caregiver-assistant',
+    bookingServiceTypeId: '5',
+    title: 'Caregiver Assistant',
     description: 'Compassionate, professional care for seniors at home. Daily assistance, companionship, and medication support.',
     icon: 'elder',
     image: '/assets/service-elder-care.png',
@@ -22,17 +22,17 @@ export const services = [
     image: '/assets/service-physiotherapy.png',
   },
   {
-    id: 'home-nurses',
-    bookingServiceTypeId: '3',
-    title: 'Home Nurses',
+    id: 'home-nurse',
+    bookingServiceTypeId: '1',
+    title: 'Home Nurse',
     description: 'Skilled nursing care at home—post-surgery, palliative care, and general nursing when you need it.',
     icon: 'nurse',
     image: '/assets/service-home-nurses.png',
   },
   {
     id: 'mother-baby',
-    bookingServiceTypeId: '4',
-    title: 'Mother & Baby Care',
+    bookingServiceTypeId: '3',
+    title: 'Mother Baby Care',
     description: 'Postnatal and newborn care at home. Experienced caregivers for mother and baby wellness.',
     icon: 'baby',
     image: '/assets/service-mother-baby.png',
