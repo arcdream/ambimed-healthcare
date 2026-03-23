@@ -1,10 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import dayjs from 'dayjs'
 import { useAuth } from '../context/AuthContext'
 import { useMetadata } from '../context/MetadataContext'
 import { addressService } from '../services/addressService'
 import { clearPendingBookingDraft, getPendingBookingDraft, savePendingBookingDraft } from '../lib/pendingBooking'
+
+/** Local calendar date only — avoids UTC midnight bugs from parsing "YYYY-MM-DD" with Date/dayjs. */
+function formatYmdLocal(d) {
+  const yy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
+}
+
+function todayYmd() {
+  return formatYmdLocal(new Date())
+}
+
+/** Add days to a YYYY-MM-DD string using local calendar (inclusive min span uses minDays - 1). */
+function addCalendarDaysYmd(ymd, daysToAdd) {
+  const parts = String(ymd).split('-').map((n) => parseInt(n, 10))
+  if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return ymd
+  const [y, m, d] = parts
+  const dt = new Date(y, m - 1, d)
+  dt.setDate(dt.getDate() + daysToAdd)
+  return formatYmdLocal(dt)
+}
 
 const TIME_SLOTS = [
   '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
@@ -26,8 +47,8 @@ export function BookingPage() {
   const subtypes = service?.subtypes ?? []
   const [selectedSubtype, setSelectedSubtype] = useState(subtypes[0] ?? null)
   const [genderPreference, setGenderPreference] = useState()
-  const [startDate, setStartDate] = useState(() => dayjs().format('YYYY-MM-DD'))
-  const [endDate, setEndDate] = useState(() => dayjs().format('YYYY-MM-DD'))
+  const [startDate, setStartDate] = useState(() => todayYmd())
+  const [endDate, setEndDate] = useState(() => todayYmd())
   const [startTime, setStartTime] = useState('09:00')
   const [notes, setNotes] = useState('')
   const [addresses, setAddresses] = useState([])
@@ -49,18 +70,35 @@ export function BookingPage() {
     resumeHydratedRef.current = false
   }, [serviceId])
 
-  const minBookingDays = Math.max(1, service?.minimumBookingDays ?? 1)
-  const minimumEndDate = dayjs(startDate).add(minBookingDays - 1, 'day').format('YYYY-MM-DD')
+  /** When API omits this, default to 30 days (common business rule). Explicit 1+ from DB still wins. */
+  const minBookingDays = Math.max(
+    1,
+    service == null
+      ? 1
+      : service.minimumBookingDays != null && service.minimumBookingDays >= 1
+        ? service.minimumBookingDays
+        : 30,
+  )
+  const minimumEndDate = addCalendarDaysYmd(startDate, minBookingDays - 1)
 
   useEffect(() => {
     setSelectedSubtype(subtypes[0] ?? null)
   }, [serviceId, subtypes.length])
 
+  /**
+   * When minimum booking length loads/changes from metadata, set end = start + (minDays - 1).
+   * (Do not depend on `startDate` here — that would overwrite draft end on resume-from-login.)
+   */
   useEffect(() => {
-    if (dayjs(endDate).isBefore(dayjs(minimumEndDate), 'day')) {
-      setEndDate(minimumEndDate)
-    }
-  }, [minBookingDays, startDate, minimumEndDate, endDate])
+    setEndDate(addCalendarDaysYmd(startDate, minBookingDays - 1))
+  }, [minBookingDays])
+
+  /** User changed start date: always move end to the minimum allowed end (inclusive span). */
+  const onStartDateChange = (next) => {
+    if (!next) return
+    setStartDate(next)
+    setEndDate(addCalendarDaysYmd(next, minBookingDays - 1))
+  }
 
   /** After sign-in, restore guest’s choices from sessionStorage (visit address is added below). */
   useEffect(() => {
@@ -285,7 +323,13 @@ export function BookingPage() {
       <div className="client-app-card">
         <h2>Start date & time</h2>
         <label htmlFor="sd">Start date</label>
-        <input id="sd" type="date" value={startDate} min={dayjs().format('YYYY-MM-DD')} onChange={(e) => setStartDate(e.target.value)} />
+        <input
+          id="sd"
+          type="date"
+          value={startDate}
+          min={todayYmd()}
+          onChange={(e) => onStartDateChange(e.target.value)}
+        />
 
         <div className="time-slots">
           {TIME_SLOTS.map((t) => (
