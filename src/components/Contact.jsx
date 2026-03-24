@@ -47,7 +47,7 @@ export function Contact() {
               </Link>
               <p className="contact-ref-intro">{CONTACT.contactIntro}</p>
 
-              <h3 className="contact-ref-heading">Contact us</h3>
+              <h3 className="contact-ref-heading">Reach us</h3>
               <p className="contact-ref-line">
                 <span className="contact-ref-label">Customer care</span>
                 <a href={telHref} className="contact-ref-link">

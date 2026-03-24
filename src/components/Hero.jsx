@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../client-app/context/AuthContext.jsx'
+import { config } from '../data/config'
 
 export function Hero() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -39,6 +40,17 @@ export function Hero() {
                 <Link to="/app/booking" className="btn btn-secondary">
                   Book new care
                 </Link>
+              </motion.div>
+              <motion.div
+                className="hero-trust-box"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.58 }}
+                role="status"
+                aria-live="polite"
+              >
+                <span className="hero-trust-stat">{config.heroTrustStats.headline}</span>
+                <span className="hero-trust-label">{config.heroTrustStats.subline}</span>
               </motion.div>
             </>
           ) : (

@@ -40,11 +40,7 @@ export function SeoContentSection() {
         >
           <p className="seo-article-lead">{lead}</p>
           {sections.map((block) => (
-            <section
-              key={block.id}
-              className="seo-article-block"
-              aria-labelledby={`seo-h3-${block.id}`}
-            >
+            <div key={block.id} className="seo-article-block">
               <h3 id={`seo-h3-${block.id}`} className="seo-article-h3">
                 {block.heading}
               </h3>
@@ -53,7 +49,7 @@ export function SeoContentSection() {
                   {p}
                 </p>
               ))}
-            </section>
+            </div>
           ))}
           <p className="seo-article-cta">
             <Link to="/app/booking" className="seo-article-book-link">

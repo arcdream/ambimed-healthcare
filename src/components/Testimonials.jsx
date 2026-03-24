@@ -46,8 +46,8 @@ export function Testimonials() {
               <StarRating rating={item.rating} />
               <blockquote className="testimonial-text">"{item.text}"</blockquote>
               <footer className="testimonial-author">
-                <strong>{item.name}</strong>
-                <span>{item.role}</span>
+                <h3 className="testimonial-name">{item.name}</h3>
+                <p className="testimonial-role">{item.role}</p>
               </footer>
             </motion.article>
           ))}

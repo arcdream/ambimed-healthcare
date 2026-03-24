@@ -4,6 +4,11 @@
 export const config = {
   /** Canonical origin (no trailing slash). Must match public/sitemap.xml and robots.txt Sitemap URL. */
   siteUrl: 'https://www.ambimed.in',
+  /** Trust line on signed-in hero (below Open dashboard) */
+  heroTrustStats: {
+    headline: '25,000+',
+    subline: 'Families Trusted Ambimed',
+  },
   // Set to true to show the "Who we are" / About section; false to hide it
   showAboutSection: false,
   // Set to true to show the "Our team" section; false to hide it

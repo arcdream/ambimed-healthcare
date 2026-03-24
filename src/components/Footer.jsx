@@ -30,7 +30,7 @@ export function Footer() {
           <p className="footer-tagline">Trusted home healthcare. Easy booking. Transparent billing.</p>
         </div>
         <div className="footer-links">
-          <h4>Quick links</h4>
+          <h2 className="footer-section-heading">Quick links</h2>
           <ul>
             {quickLinks.map((link) => (
               <li key={link.id}>
@@ -42,7 +42,7 @@ export function Footer() {
           </ul>
         </div>
         <div className="footer-contact">
-          <h4>Contact</h4>
+          <h2 className="footer-section-heading">Contact</h2>
           <p>{config.contact.phone} · {config.contact.email}</p>
         </div>
       </div>
