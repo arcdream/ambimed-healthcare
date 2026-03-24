@@ -15,8 +15,16 @@
 
 .mission-title {
   font-size: clamp(1.5rem, 3.5vw, 2rem);
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
   color: var(--color-white);
+}
+
+.mission-subheading {
+  font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.35;
 }
 
 .mission-text {

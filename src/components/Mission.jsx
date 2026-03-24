@@ -13,6 +13,7 @@ export function Mission() {
         >
           <p className="section-subtitle mission-subtitle">Our motivation</p>
           <h2 className="mission-title">We are motivated by serving society</h2>
+          <h3 className="mission-subheading">Dependable care for families and communities</h3>
           <p className="mission-text">
             Ambimed exists to bring dependable, affordable healthcare to your home. Every service we
             offer—elder care, physiotherapy, home nurses, mother & baby care—is driven by a simple

@@ -22,6 +22,15 @@ export function Apps() {
         >
           Our apps
         </motion.h2>
+        <motion.h3
+          className="section-subheading"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.05 }}
+        >
+          Client and caregiver apps (coming soon)
+        </motion.h3>
         <motion.div
           className="apps-coming-soon"
           initial={{ opacity: 0, y: 20 }}

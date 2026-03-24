@@ -13,6 +13,7 @@ export function About() {
         >
           <p className="section-subtitle">Who we are</p>
           <h2 className="section-title">About Ambimed Healthcare</h2>
+          <h3 className="section-subheading">Trusted care at your doorstep</h3>
           <p className="about-text">
             We bring trusted healthcare to your doorstep—elder care, physiotherapy, home nurses,
             and mother & baby care. Our mission is to make quality care accessible and affordable.

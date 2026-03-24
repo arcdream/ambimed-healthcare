@@ -30,8 +30,10 @@ export function Footer() {
           <p className="footer-tagline">Trusted home healthcare. Easy booking. Transparent billing.</p>
         </div>
         <div className="footer-links">
-          <h2 className="footer-section-heading">Quick links</h2>
-          <ul>
+          <p className="footer-section-heading" id="footer-quick-links-heading">
+            Quick links
+          </p>
+          <ul aria-labelledby="footer-quick-links-heading">
             {quickLinks.map((link) => (
               <li key={link.id}>
                 <button type="button" className="footer-link" onClick={() => scrollTo(link.id)}>
@@ -42,7 +44,9 @@ export function Footer() {
           </ul>
         </div>
         <div className="footer-contact">
-          <h2 className="footer-section-heading">Contact</h2>
+          <p className="footer-section-heading" id="footer-contact-heading">
+            Contact
+          </p>
           <p>{config.contact.phone} · {config.contact.email}</p>
         </div>
       </div>
