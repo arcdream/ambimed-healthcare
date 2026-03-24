@@ -1,0 +1,276 @@
+/**
+ * Mobile & touch: readable text (≥16px body), tap targets ≥44×44px, safe-area padding.
+ * Loaded after index.css so these rules win on small viewports.
+ */
+
+:root {
+  --tap-target-min: 44px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (max-width: 899px) {
+  :root {
+    --container: min(1200px, 100% - 2.5rem);
+  }
+
+  body {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  .section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+  }
+
+  .section-subtitle {
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+  }
+
+  .section-title {
+    font-size: clamp(1.55rem, 6vw, 2.1rem);
+    line-height: 1.22;
+  }
+
+  .section-subheading {
+    font-size: clamp(1.08rem, 3.5vw, 1.35rem);
+  }
+
+  /* Primary / secondary CTAs (Hero + shared .btn) */
+  .btn {
+    min-height: var(--tap-target-min);
+    min-width: var(--tap-target-min);
+    padding: 0.875rem 1.35rem;
+    font-size: 1.05rem;
+  }
+
+  .hero {
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px) + 2rem);
+  }
+
+  .hero-desc {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  .hero-badge {
+    font-size: 0.875rem;
+  }
+
+  .hero-badge--welcome {
+    font-size: 0.9375rem;
+  }
+
+  .hero-trust-label {
+    font-size: 0.9375rem;
+  }
+
+  .header-inner {
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  }
+
+  /* Header */
+  .menu-toggle {
+    width: var(--tap-target-min);
+    height: var(--tap-target-min);
+    padding: 10px;
+    align-items: center;
+  }
+
+  .header-btn-login {
+    min-height: var(--tap-target-min);
+    padding: 0.5rem 1.15rem;
+    font-size: 1rem;
+  }
+
+  .header-btn-login--compact {
+    min-height: var(--tap-target-min);
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .nav.mobile {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .nav.mobile .nav-link {
+    min-height: var(--tap-target-min);
+    padding: 0.75rem 0;
+    font-size: 1.0625rem;
+  }
+
+  .header-user-trigger {
+    min-height: var(--tap-target-min);
+    padding: 0.35rem 0.65rem 0.35rem 0.4rem;
+  }
+
+  .header-user-dropdown a,
+  .header-user-signout {
+    min-height: var(--tap-target-min);
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  /* Footer */
+  .footer-link {
+    min-height: var(--tap-target-min);
+    padding: 0.65rem 0;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .footer-tagline {
+    font-size: 1rem;
+  }
+
+  .footer-section-heading {
+    font-size: 1.0625rem;
+  }
+
+  .footer-contact p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .footer-bottom p {
+    font-size: 0.9375rem;
+  }
+
+  /* Contact */
+  .contact-ref-intro {
+    font-size: 1.0625rem;
+  }
+
+  .contact-ref-heading {
+    font-size: 1.125rem;
+  }
+
+  .contact-ref-line {
+    font-size: 1.0625rem;
+  }
+
+  .contact-ref-label {
+    font-size: 0.8125rem;
+  }
+
+  .contact-social-link {
+    width: var(--tap-target-min);
+    height: var(--tap-target-min);
+  }
+
+  .contact-ref-list--cities {
+    font-size: 0.9375rem;
+  }
+
+  .contact-ref-list-links li {
+    min-height: var(--tap-target-min);
+    display: flex;
+    align-items: center;
+  }
+
+  .contact-ref-company-link {
+    min-height: var(--tap-target-min);
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0;
+    flex: 1;
+    width: 100%;
+  }
+
+  .footer-links li {
+    width: 100%;
+  }
+
+  /* SEO article */
+  .seo-article-lead {
+    font-size: 1.0625rem;
+  }
+
+  .seo-article-p,
+  .seo-article-cta {
+    font-size: 1.0625rem;
+  }
+
+  /* Service cards */
+  .service-title {
+    font-size: 1.25rem;
+  }
+
+  .service-desc {
+    font-size: 1.0625rem;
+  }
+
+  .service-card-cta {
+    display: inline-block;
+    min-height: var(--tap-target-min);
+    padding-top: 0.5rem;
+    line-height: 1.4;
+  }
+
+  /* Pricing CTA */
+  .pricing-text {
+    font-size: 1.0625rem;
+  }
+
+  /* Testimonials */
+  .testimonial-text {
+    font-size: 1.0625rem;
+  }
+
+  .testimonial-name {
+    font-size: 1rem;
+  }
+
+  .testimonial-role {
+    font-size: 0.9375rem;
+  }
+
+  /* Apps */
+  .apps-coming-soon-text {
+    font-size: 1.0625rem;
+  }
+
+  /* Mission */
+  .mission-text {
+    font-size: 1.0625rem;
+  }
+
+  .mission-subheading {
+    font-size: clamp(1.05rem, 3vw, 1.2rem);
+  }
+
+  /* Caregivers list */
+  .caregivers-text,
+  .caregivers-list {
+    font-size: 1.0625rem;
+  }
+
+  .about-text {
+    font-size: 1.0625rem;
+  }
+
+  .team-bio,
+  .team-role {
+    font-size: 1.0625rem;
+  }
+
+  /* Route fallback */
+  .route-fallback {
+    font-size: 1.0625rem;
+  }
+}

@@ -1,9 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import MarketingSite from './MarketingSite.jsx'
-import { TermsPage } from './components/TermsPage.jsx'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './client-app/context/AuthContext.jsx'
 import { ClientAppProviders } from './client-app/ClientAppProviders.jsx'
-import { ClientAppRoutes } from './client-app/ClientAppRoutes.jsx'
+import MarketingSite from './MarketingSite.jsx'
+import { RouteFallback } from './components/RouteFallback.jsx'
+
+const TermsPage = lazy(() => import('./components/TermsPage.jsx'))
+const ClientAppRoutes = lazy(() =>
+  import('./client-app/ClientAppRoutes.jsx').then((m) => ({ default: m.ClientAppRoutes })),
+)
 
 export default function App() {
   return (
@@ -14,11 +19,20 @@ export default function App() {
             path="/app/*"
             element={
               <ClientAppProviders>
-                <ClientAppRoutes />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClientAppRoutes />
+                </Suspense>
               </ClientAppProviders>
             }
           />
-          <Route path="/terms" element={<TermsPage />} />
+          <Route
+            path="/terms"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <TermsPage />
+              </Suspense>
+            }
+          />
           <Route path="/*" element={<MarketingSite />} />
         </Routes>
       </BrowserRouter>
