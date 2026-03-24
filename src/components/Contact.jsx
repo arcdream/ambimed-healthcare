@@ -8,7 +8,7 @@ const LOGO_IMG = '/assets/ambimed-logo.png'
 
 const CONTACT = config.contact
 const SOCIAL = config.social
-const CITIES = config.citiesAvailable ?? ['Delhi NCR']
+const CITIES = config.citiesOperating ?? []
 
 export function Contact() {
   const telHref = `tel:${CONTACT.phone.replace(/\s/g, '')}`
@@ -109,8 +109,8 @@ export function Contact() {
             </div>
 
             <div className="contact-ref-col">
-              <h3 className="contact-ref-heading">Cities available</h3>
-              <ul className="contact-ref-list">
+              <h3 className="contact-ref-heading">Cities Operating</h3>
+              <ul className="contact-ref-list contact-ref-list--cities">
                 {CITIES.map((city) => (
                   <li key={city}>Ambimed {city}</li>
                 ))}

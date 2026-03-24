@@ -10,6 +10,7 @@ import { Testimonials } from './components/Testimonials'
 import { Apps } from './components/Apps'
 import { Team } from './components/Team'
 import { Contact } from './components/Contact'
+import { SeoContentSection } from './components/SeoContentSection'
 import { Footer } from './components/Footer'
 
 import './components/Header.css'
@@ -23,6 +24,7 @@ import './components/Testimonials.css'
 import './components/Apps.css'
 import './components/Team.css'
 import './components/Contact.css'
+import './components/SeoContentSection.css'
 import './components/Footer.css'
 
 export default function MarketingSite() {
@@ -32,6 +34,7 @@ export default function MarketingSite() {
       <main>
         <Hero />
         <Services />
+        <SeoContentSection />
         {config.showAboutSection && <About />}
         <Caregivers />
         <Pricing />

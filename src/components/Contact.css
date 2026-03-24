@@ -127,6 +127,20 @@
   color: var(--color-deep);
 }
 
+.contact-ref-list--cities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+  font-size: 0.864rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.contact-ref-list--cities li {
+  white-space: nowrap;
+}
+
 .contact-ref-list-links li {
   margin-bottom: 0.35rem;
 }

@@ -22,10 +22,23 @@ export const config = {
     email: 'info@ambimed.in',
     /** Short line under logo in Contact section */
     contactIntro:
-      'We’ve built Ambimed with the intention of providing exceptional, reliable home healthcare — currently serving families in Delhi NCR.',
+      'We’ve built Ambimed to provide exceptional, reliable home healthcare across India—operating in multiple cities so more families can book trusted care at home.',
   },
-  /** Cities where Ambimed operates (shown in Contact section) */
-  citiesAvailable: ['Delhi NCR'],
+  /** Cities where Ambimed operates (shown under “Cities Operating” in Contact) */
+  citiesOperating: [
+    'Delhi',
+    'Bengaluru',
+    'Kolkata',
+    'Mumbai',
+    'Ahmedabad',
+    'Lucknow',
+    'Chennai',
+    'Noida',
+    'Gurugram',
+    'Ghaziabad',
+    'Faridabad',
+    'Pune',
+  ],
   /**
    * Social profile URLs — use “ambimed” handles where applicable.
    * Replace # with real links when ready.
