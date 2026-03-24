@@ -15,7 +15,26 @@ export const config = {
   qrCaregiverApp: '/assets/qr-placeholder.png',
   contact: {
     phone: '+91- 9205868247',
+    /** Digits only for wa.me links */
+    whatsapp: '919205868247',
     email: 'info@ambimed.in',
-    address: 'Your address here. Edit in src/data/config.js',
+    /** Short line under logo in Contact section */
+    contactIntro:
+      'We’ve built Ambimed with the intention of providing exceptional, reliable home healthcare — currently serving families in Delhi NCR.',
   },
+  /** Cities where Ambimed operates (shown in Contact section) */
+  citiesAvailable: ['Delhi NCR'],
+  /**
+   * Social profile URLs — use “ambimed” handles where applicable.
+   * Replace # with real links when ready.
+   */
+  social: {
+    facebook: 'https://www.facebook.com/ambimed',
+    instagram: 'https://www.instagram.com/ambimed',
+    x: 'https://x.com/ambimed',
+    youtube: 'https://www.youtube.com/@ambimed',
+    linkedin: 'https://www.linkedin.com/company/ambimed',
+  },
+  /** Privacy — replace with your live policy page when ready */
+  privacyPolicyUrl: 'mailto:info@ambimed.in?subject=Privacy%20Policy',
 }
