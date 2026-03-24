@@ -1,0 +1,5 @@
+# Search engines may crawl all public paths. Adjust Disallow rules if you add
+# private or duplicate-only areas.
+
+User-agent: *
+Allow: /
