@@ -49,11 +49,11 @@ export const config = {
    * Replace # with real links when ready.
    */
   social: {
-    facebook: 'https://www.facebook.com/ambimed',
+    facebook: 'https://www.facebook.com/ambimed.healthcare',
     instagram: 'https://www.instagram.com/ambimed',
-    x: 'https://x.com/ambimed',
-    youtube: 'https://www.youtube.com/@ambimed',
-    linkedin: 'https://www.linkedin.com/company/ambimed',
+    x: 'https://x.com/Ambimed1104',
+    youtube: 'https://www.youtube.com/@AmbimedHealthcare',
+    linkedin: 'https://www.linkedin.com/company/ambimed-healthcare/',
   },
   /** Privacy — replace with your live policy page when ready */
   privacyPolicyUrl: 'mailto:info@ambimed.in?subject=Privacy%20Policy',
