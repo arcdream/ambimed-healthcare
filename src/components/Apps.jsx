@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { config } from '../data/config'
+import { Link } from 'react-router-dom'
 import './Apps.css'
 
 export function Apps() {
@@ -12,7 +12,7 @@ export function Apps() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Download our apps
+          Mobile apps
         </motion.p>
         <motion.h2
           className="section-title"
@@ -22,68 +22,29 @@ export function Apps() {
         >
           Our apps
         </motion.h2>
-        <div className="apps-grid">
-          <motion.article
-            className="app-card app-card-client"
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -4 }}
-          >
-            <h3 className="app-card-title">Book care – Client app</h3>
-            <p className="app-card-desc">
-              Book elder care, physiotherapy, home nurses, and mother & baby care. Easy booking,
-              transparent billing, trusted care at home.
-            </p>
-            <div className="app-card-qr">
-              <img
-                src={config.qrClientApp}
-                alt="QR code for client app"
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                  e.target.nextElementSibling?.classList.remove('hide')
-                }}
-                onLoad={(e) => e.target.nextElementSibling?.classList.add('hide')}
-              />
-              <div className="app-qr-placeholder hide">QR code – add image to /public/assets/qr-client-app.png</div>
-            </div>
-            <a href={config.clientAppUrl} className="app-store-link" target="_blank" rel="noopener noreferrer">
-              Get it on Google Play
-            </a>
-            <p className="app-note">Edit app link and QR in src/data/config.js</p>
-          </motion.article>
-
-          <motion.article
-            className="app-card app-card-caregiver"
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ y: -4 }}
-          >
-            <h3 className="app-card-title">Caregiver Partner app</h3>
-            <p className="app-card-desc">
-              Want to associate with us as a caregiver? Download our app, register, and get
-              caregiving work in homecare or hospitals. Flexible opportunities with Ambimed.
-            </p>
-            <div className="app-card-qr">
-              <img
-                src={config.qrCaregiverApp}
-                alt="QR code for caregiver app"
-                onError={(e) => {
-                  e.target.style.display = 'none'
-                  e.target.nextElementSibling?.classList.remove('hide')
-                }}
-                onLoad={(e) => e.target.nextElementSibling?.classList.add('hide')}
-              />
-              <div className="app-qr-placeholder hide">QR code – add image to /public/assets/qr-caregiver-app.png</div>
-            </div>
-            <a href={config.caregiverAppUrl} className="app-store-link" target="_blank" rel="noopener noreferrer">
-              Download Caregiver App
-            </a>
-            <p className="app-note">Edit app link and QR in src/data/config.js</p>
-          </motion.article>
-        </div>
+        <motion.h3
+          className="section-subheading"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.05 }}
+        >
+          Client and caregiver apps (coming soon)
+        </motion.h3>
+        <motion.div
+          className="apps-coming-soon"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="apps-coming-soon-text">
+            <strong>Coming soon.</strong> Our mobile apps aren’t ready yet — we’re finishing the experience for clients and
+            caregivers. You can still book care on the web anytime.
+          </p>
+          <Link to="/app/booking" className="btn btn-primary apps-book-link">
+            Book care on the web
+          </Link>
+        </motion.div>
       </div>
     </section>
   )

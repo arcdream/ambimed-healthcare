@@ -1,51 +1,41 @@
-import { Header } from './components/Header'
-import { Hero } from './components/Hero'
-import { Services } from './components/Services'
-import { About } from './components/About'
-import { WhatWeDo } from './components/WhatWeDo'
-import { Caregivers } from './components/Caregivers'
-import { Pricing } from './components/Pricing'
-import { Mission } from './components/Mission'
-import { Testimonials } from './components/Testimonials'
-import { Apps } from './components/Apps'
-import { Team } from './components/Team'
-import { Contact } from './components/Contact'
-import { Footer } from './components/Footer'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './client-app/context/AuthContext.jsx'
+import { ClientAppProviders } from './client-app/ClientAppProviders.jsx'
+import MarketingSite from './MarketingSite.jsx'
+import { RouteFallback } from './components/RouteFallback.jsx'
 
-import './components/Header.css'
-import './components/Hero.css'
-import './components/Services.css'
-import './components/About.css'
-import './components/WhatWeDo.css'
-import './components/Caregivers.css'
-import './components/Pricing.css'
-import './components/Mission.css'
-import './components/Testimonials.css'
-import './components/Apps.css'
-import './components/Team.css'
-import './components/Contact.css'
-import './components/Footer.css'
+const TermsPage = lazy(() => import('./components/TermsPage.jsx'))
+const ClientAppRoutes = lazy(() =>
+  import('./client-app/ClientAppRoutes.jsx').then((m) => ({ default: m.ClientAppRoutes })),
+)
 
-function App() {
+export default function App() {
   return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        <About />
-        <WhatWeDo />
-        <Caregivers />
-        <Pricing />
-        <Mission />
-        <Testimonials />
-        <Apps />
-        <Team />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/app/*"
+            element={
+              <ClientAppProviders>
+                <Suspense fallback={<RouteFallback />}>
+                  <ClientAppRoutes />
+                </Suspense>
+              </ClientAppProviders>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <TermsPage />
+              </Suspense>
+            }
+          />
+          <Route path="/*" element={<MarketingSite />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
-
-export default App

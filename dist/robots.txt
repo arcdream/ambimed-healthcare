@@ -1,0 +1,8 @@
+# Search engines may crawl all public paths. Adjust Disallow rules if you add
+# private or duplicate-only areas.
+# Sitemap URL must use your canonical domain (see src/data/config.js siteUrl).
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.ambimed.in/sitemap.xml

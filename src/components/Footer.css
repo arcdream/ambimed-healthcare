@@ -20,9 +20,11 @@
   font-size: 0.95rem;
 }
 
-.footer h4 {
+.footer-section-heading {
   margin: 0 0 0.75rem;
   font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--color-white);
 }
 

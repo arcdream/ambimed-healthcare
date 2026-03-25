@@ -1,0 +1,70 @@
+.terms-page {
+  padding: 5.5rem 1rem 3rem;
+  max-width: 720px;
+}
+
+.terms-page h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--color-deep);
+  margin: 0 0 0.5rem;
+}
+
+.terms-lead {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: rgba(29, 61, 114, 0.9);
+  margin: 0 0 1.5rem;
+}
+
+.terms-pdf-actions {
+  margin: 0 0 1rem;
+}
+
+.terms-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.35rem;
+  background: linear-gradient(135deg, var(--color-bright), #006cbd);
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 120, 212, 0.35);
+}
+
+.terms-pdf-btn:hover {
+  text-decoration: none;
+  filter: brightness(1.05);
+}
+
+.terms-pdf-url {
+  font-size: 0.85rem;
+  word-break: break-all;
+  margin: 0 0 2rem;
+  color: rgba(29, 61, 114, 0.72);
+}
+
+.terms-pdf-url a {
+  color: var(--color-bright);
+  font-weight: 600;
+}
+
+.terms-back {
+  margin: 0 0 1.5rem;
+}
+
+.terms-back:last-child {
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
+.terms-back a {
+  color: var(--color-bright);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.terms-back a:hover {
+  text-decoration: underline;
+}

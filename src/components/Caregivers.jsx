@@ -21,6 +21,15 @@ export function Caregivers() {
         >
           Well-trained, well-groomed caregivers
         </motion.h2>
+        <motion.h3
+          className="section-subheading"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.05 }}
+        >
+          What we look for in every caregiver
+        </motion.h3>
         <motion.div
           className="caregivers-content"
           initial={{ opacity: 0, y: 20 }}

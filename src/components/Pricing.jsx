@@ -21,6 +21,15 @@ export function Pricing() {
         >
           Very reasonable pricing
         </motion.h2>
+        <motion.h3
+          className="section-subheading"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.05 }}
+        >
+          Fair quotes with no hidden charges
+        </motion.h3>
         <motion.div
           className="pricing-content"
           initial={{ opacity: 0, y: 20 }}

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { config } from '../data/config'
 
-const quickLinks = [
+const quickLinksBase = [
   { id: 'services', label: 'Services' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -9,6 +9,7 @@ const quickLinks = [
 ]
 
 export function Footer() {
+  const quickLinks = config.showAboutSection ? quickLinksBase : quickLinksBase.filter((l) => l.id !== 'about')
   const scrollTo = (id) => {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
@@ -29,8 +30,10 @@ export function Footer() {
           <p className="footer-tagline">Trusted home healthcare. Easy booking. Transparent billing.</p>
         </div>
         <div className="footer-links">
-          <h4>Quick links</h4>
-          <ul>
+          <p className="footer-section-heading" id="footer-quick-links-heading">
+            Quick links
+          </p>
+          <ul aria-labelledby="footer-quick-links-heading">
             {quickLinks.map((link) => (
               <li key={link.id}>
                 <button type="button" className="footer-link" onClick={() => scrollTo(link.id)}>
@@ -41,7 +44,9 @@ export function Footer() {
           </ul>
         </div>
         <div className="footer-contact">
-          <h4>Contact</h4>
+          <p className="footer-section-heading" id="footer-contact-heading">
+            Contact
+          </p>
           <p>{config.contact.phone} · {config.contact.email}</p>
         </div>
       </div>

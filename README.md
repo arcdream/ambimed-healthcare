@@ -8,6 +8,20 @@ A React (Vite) website for **Ambimed Healthcare**—elder care, physiotherapy, h
 - **Bright blue:** `#0078D4`
 - **White:** `#FFFFFF`
 
+## Client app (web) – same backend as the Ambimed mobile app
+
+The public marketing site stays at **`/`**. The **client booking experience** (sign in with phone OTP, browse services from Supabase, book with address & dates, view history) lives at **`/app`**, aligned with `ambimed/frontend` (Expo).
+
+1. Copy `.env.example` to `.env` and set:
+   - `VITE_SUPABASE_URL` – same project as the mobile app (`EXPO_PUBLIC_SUPABASE_URL`)
+   - `VITE_SUPABASE_ANON_KEY` – same as `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+2. Restart `npm run dev`
+3. Open **http://localhost:5173/app** – sign in with the same phone as the app (client profile required).
+
+**Routes:** `/app` → booking home · `/app/login` · `/app/booking` · `/app/book/:serviceTypeId` · `/app/book/review` · `/app/history` (legacy `/app/home` redirects to `/app/booking`)
+
+Deploying the built site to static hosting: configure the server to **serve `index.html` for all routes** (SPA fallback) so `/app/...` works.
+
 ## Run locally
 
 ```bash
@@ -15,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Open [http://localhost:5173](http://localhost:5173). Use **Book care** in the header or hero to open **`/app`**.
 
 ## Build for production
 

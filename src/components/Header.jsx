@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { config } from '../data/config'
+import { useAuth } from '../client-app/context/AuthContext.jsx'
 
 const LOGO_IMG = '/assets/ambimed-logo.png'
 
-const navLinks = [
+const marketingNavBase = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
   { id: 'about', label: 'About' },
-  { id: 'what-we-do', label: 'What We Do' },
   { id: 'caregivers', label: 'Caregivers' },
   { id: 'testimonials', label: 'Feedback' },
   { id: 'apps', label: 'Our Apps' },
@@ -15,9 +17,34 @@ const navLinks = [
   { id: 'contact', label: 'Contact' },
 ]
 
+const appNavLinks = [
+  { to: '/', label: 'Website home' },
+  { to: '/#services', label: 'Services' },
+  { to: '/#contact', label: 'Contact' },
+  { to: '/app/booking', label: 'Book care' },
+  { to: '/app/history', label: 'My bookings' },
+]
+
 export function Header() {
+  const location = useLocation()
+  const isApp = location.pathname.startsWith('/app')
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
+
+  const marketingNav = marketingNavBase.filter(
+    (l) => (l.id === 'about' ? config.showAboutSection : l.id === 'team' ? config.showTeamSection : true),
+  )
+
+  useEffect(() => {
+    const close = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false)
+    }
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
+  }, [])
 
   const scrollTo = (id) => {
     const el = document.getElementById(id)
@@ -25,45 +52,116 @@ export function Header() {
     setOpen(false)
   }
 
+  const displayName = user?.firstName?.trim() || (user?.mobileNumber ? `…${String(user.mobileNumber).slice(-4)}` : 'there')
+  const avatarLetter = (
+    user?.firstName?.trim()?.[0] ||
+    String(user?.mobileNumber || '').replace(/\D/g, '').slice(-1) ||
+    'U'
+  ).toUpperCase()
+
+  const authDesktop = (
+    <div className="header-auth">
+      {isLoading ? (
+        <span className="header-auth-loading" aria-hidden>
+          …
+        </span>
+      ) : isAuthenticated ? (
+        <div className="header-user-wrap" ref={userMenuRef}>
+          <button
+            type="button"
+            className="header-user-trigger"
+            aria-expanded={userMenuOpen}
+            aria-haspopup="true"
+            onClick={() => setUserMenuOpen((v) => !v)}
+          >
+            <span className="header-user-avatar">{avatarLetter}</span>
+            <span className="header-user-name">Hi, {displayName}</span>
+            <span className="header-user-chevron" aria-hidden>
+              ▾
+            </span>
+          </button>
+          <AnimatePresence>
+            {userMenuOpen && (
+              <motion.div
+                className="header-user-dropdown"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Link to="/app/booking" onClick={() => setUserMenuOpen(false)}>
+                  Book care
+                </Link>
+                <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
+                  My bookings
+                </Link>
+                <button
+                  type="button"
+                  className="header-user-signout"
+                  onClick={() => {
+                    logout()
+                    setUserMenuOpen(false)
+                  }}
+                >
+                  Sign out
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ) : (
+        <Link to="/app/login" className="header-btn-login">
+          Log in
+        </Link>
+      )}
+    </div>
+  )
+
   return (
-    <motion.header
-      className="header"
-      initial={{ y: -80 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    >
+    <motion.header className={`header ${isApp ? 'header--app' : ''}`} initial={{ y: -80 }} animate={{ y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
       <div className="header-inner container">
-        <a href="#hero" className="logo" onClick={(e) => { e.preventDefault(); scrollTo('hero') }}>
-          {!logoError && (
-            <img
-              src={LOGO_IMG}
-              alt=""
-              className="logo-img"
-              onError={() => setLogoError(true)}
-            />
-          )}
+        <Link to="/" className="logo" onClick={() => setOpen(false)}>
+          {!logoError && <img src={LOGO_IMG} alt="" className="logo-img" onError={() => setLogoError(true)} />}
           <span className="logo-text">
-            <span className="logo-ambi">AMBI</span><span className="logo-med">MED</span>
+            <span className="logo-ambi">AMBI</span>
+            <span className="logo-med">MED</span>
           </span>
-        </a>
+        </Link>
+
         <nav className="nav desktop">
-          {navLinks.map((link) => (
-            <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
-              {link.label}
-            </button>
-          ))}
+          {isApp
+            ? appNavLinks.map((item) => (
+                <Link key={item.to + item.label} to={item.to} className="nav-link">
+                  {item.label}
+                </Link>
+              ))
+            : marketingNav.map((link) => (
+                <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
+                  {link.label}
+                </button>
+              ))}
+          {!isApp && (
+            <Link to="/app/booking" className="nav-link nav-link--cta">
+              Book care
+            </Link>
+          )}
+          {authDesktop}
         </nav>
-        <button
-          type="button"
-          className="menu-toggle"
-          aria-label="Toggle menu"
-          onClick={() => setOpen(!open)}
-        >
-          <span className={open ? 'open' : ''} />
-          <span className={open ? 'open' : ''} />
-          <span className={open ? 'open' : ''} />
-        </button>
+
+        <div className="header-mobile-actions">
+          {!isLoading && !isAuthenticated && (
+            <Link to="/app/login" className="header-btn-login header-btn-login--compact">
+              Log in
+            </Link>
+          )}
+          <button type="button" className="menu-toggle" aria-label="Toggle menu" onClick={() => setOpen(!open)}>
+            <span className={open ? 'open' : ''} />
+            <span className={open ? 'open' : ''} />
+            <span className={open ? 'open' : ''} />
+          </button>
+        </div>
       </div>
+
       <AnimatePresence>
         {open && (
           <motion.nav
@@ -73,11 +171,47 @@ export function Header() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {navLinks.map((link) => (
-              <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
-                {link.label}
-              </button>
-            ))}
+            {isApp
+              ? appNavLinks.map((item) => (
+                  <Link key={item.to + item.label} to={item.to} className="nav-link" onClick={() => setOpen(false)}>
+                    {item.label}
+                  </Link>
+                ))
+              : marketingNav.map((link) => (
+                  <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
+                    {link.label}
+                  </button>
+                ))}
+            {!isApp && (
+              <Link to="/app/booking" className="nav-link nav-link--cta" onClick={() => setOpen(false)}>
+                Book care
+              </Link>
+            )}
+            {!isLoading && !isAuthenticated && (
+              <Link to="/app/login" className="nav-link nav-link--login-mobile" onClick={() => setOpen(false)}>
+                Log in
+              </Link>
+            )}
+            {!isLoading && isAuthenticated && (
+              <>
+                <Link to="/app/booking" className="nav-link" onClick={() => setOpen(false)}>
+                  Book care (dashboard)
+                </Link>
+                <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>
+                  My bookings
+                </Link>
+                <button
+                  type="button"
+                  className="nav-link nav-link--signout"
+                  onClick={() => {
+                    logout()
+                    setOpen(false)
+                  }}
+                >
+                  Sign out
+                </button>
+              </>
+            )}
           </motion.nav>
         )}
       </AnimatePresence>
