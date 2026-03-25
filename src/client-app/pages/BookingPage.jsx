@@ -351,7 +351,7 @@ export function BookingPage() {
         <h2>End date</h2>
         {minBookingDays > 1 && (
           <p className="muted">Minimum booking: {minBookingDays} days. For custom needs call{' '}
-            <a href="tel:+918726568502">+91 8726568502</a>.
+            <a href="tel:+918726568502">+91 9205868247</a>.
           </p>
         )}
         <label htmlFor="ed">End date</label>
