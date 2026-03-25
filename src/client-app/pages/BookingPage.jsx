@@ -100,6 +100,13 @@ export function BookingPage() {
     setEndDate(addCalendarDaysYmd(next, minBookingDays - 1))
   }
 
+  /** Block typing / paste; changes still come from the calendar UI (onChange). */
+  const blockEndDateKeyboardInput = (e) => {
+    if (e.key === 'Tab' || e.key === 'Escape') return
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.key.length === 1) e.preventDefault()
+  }
+
   /** After sign-in, restore guest’s choices from sessionStorage (visit address is added below). */
   useEffect(() => {
     if (!user?.id || !service || subtypes.length === 0 || resumeHydratedRef.current) return
@@ -348,7 +355,17 @@ export function BookingPage() {
           </p>
         )}
         <label htmlFor="ed">End date</label>
-        <input id="ed" type="date" value={endDate} min={minimumEndDate} onChange={(e) => setEndDate(e.target.value)} />
+        <input
+          id="ed"
+          type="date"
+          value={endDate}
+          min={minimumEndDate}
+          title="Use the calendar control to choose the end date"
+          aria-label="End date"
+          onChange={(e) => setEndDate(e.target.value)}
+          onKeyDown={blockEndDateKeyboardInput}
+          onPaste={(e) => e.preventDefault()}
+        />
       </div>
 
       <div className="client-app-card">
