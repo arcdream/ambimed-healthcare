@@ -55,6 +55,7 @@ img {
 
 .section {
   padding: 4rem 1rem;
+  scroll-margin-top: 5.5rem; /* offset fixed header when using hash / scrollIntoView */
 }
 
 .section-title {
