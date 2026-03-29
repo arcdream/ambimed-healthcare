@@ -29,10 +29,10 @@ npm run build
 
 ## 🚀 One-liner (All steps combined)
 ```powershell
-Remove-Item -Recurse -Force node_modules; `
-Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue; `
-Remove-Item package-lock.json -ErrorAction SilentlyContinue; `
-npm cache clean --force; `
-npm install; `
+Remove-Item -Recurse -Force node_modules; 
+Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue; 
+Remove-Item package-lock.json -ErrorAction SilentlyContinue; 
+npm cache clean --force; 
+npm install; 
 npm run build
 ```
