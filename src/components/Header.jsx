@@ -9,6 +9,7 @@ const LOGO_IMG = '/assets/ambimed-logo.png'
 const marketingNavBase = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
+  { id: 'services-pricing', label: 'Our Pricing' },
   { id: 'about', label: 'About' },
   { id: 'caregivers', label: 'Caregivers' },
   { id: 'testimonials', label: 'Feedback' },
@@ -20,6 +21,7 @@ const marketingNavBase = [
 const appNavLinks = [
   { to: '/', label: 'Website home' },
   { to: '/#services', label: 'Services' },
+  { to: '/#services-pricing', label: 'Our Pricing' },
   { to: '/#contact', label: 'Contact' },
   { to: '/app/booking', label: 'Book care' },
   { to: '/app/history', label: 'My bookings' },

@@ -4,8 +4,9 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: var(--color-white);
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, #f2f8fd 0%, #e8f4fc 100%);
+  border-bottom: 1px solid rgba(0, 120, 212, 0.1);
+  box-shadow: 0 2px 16px rgba(29, 61, 114, 0.08);
 }
 
 .header-inner {
@@ -15,10 +16,6 @@
   padding: 0.75rem 1rem;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.header--app {
-  border-bottom: 1px solid rgba(0, 120, 212, 0.12);
 }
 
 .header-mobile-actions {

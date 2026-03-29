@@ -6,11 +6,13 @@ import { Mission } from './components/Mission'
 import { Pricing } from './components/Pricing'
 import { SeoContentSection } from './components/SeoContentSection'
 import { Services } from './components/Services'
+import { ServicesPricingSection } from './components/ServicesPricingSection'
 import { Team } from './components/Team'
 import { Testimonials } from './components/Testimonials'
 import { config } from './data/config'
 
 import './components/Services.css'
+import './components/ServicesPricingSection.css'
 import './components/About.css'
 import './components/SeoContentSection.css'
 import './components/Caregivers.css'
@@ -26,6 +28,7 @@ export default function MarketingBelowFold() {
   return (
     <>
       <Services />
+      <ServicesPricingSection />
       <SeoContentSection />
       {config.showAboutSection && <About />}
       <Caregivers />
