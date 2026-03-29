@@ -80,12 +80,13 @@ html {
     padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
   }
 
-  /* Header */
   .menu-toggle {
+    display: flex;
     width: var(--tap-target-min);
     height: var(--tap-target-min);
     padding: 10px;
     align-items: center;
+    justify-content: center;
   }
 
   .header-btn-login {

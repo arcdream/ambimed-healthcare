@@ -156,10 +156,16 @@ export function Header() {
               Log in
             </Link>
           )}
-          <button type="button" className="menu-toggle" aria-label="Toggle menu" onClick={() => setOpen(!open)}>
-            <span className={open ? 'open' : ''} />
-            <span className={open ? 'open' : ''} />
-            <span className={open ? 'open' : ''} />
+          <button
+            type="button"
+            className="menu-toggle"
+            aria-expanded={open}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            onClick={() => setOpen(!open)}
+          >
+            <span className="menu-toggle-glyph" aria-hidden>
+              {open ? '✕' : '☰'}
+            </span>
           </button>
         </div>
       </div>
