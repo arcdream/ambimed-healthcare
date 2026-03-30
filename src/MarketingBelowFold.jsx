@@ -1,6 +1,7 @@
 import { About } from './components/About'
 import { Apps } from './components/Apps'
 import { Caregivers } from './components/Caregivers'
+import { AchievementsSection } from './components/AchievementsSection'
 import { Contact } from './components/Contact'
 import { Mission } from './components/Mission'
 import { Pricing } from './components/Pricing'
@@ -21,6 +22,7 @@ import './components/Mission.css'
 import './components/Testimonials.css'
 import './components/Apps.css'
 import './components/Team.css'
+import './components/AchievementsSection.css'
 import './components/Contact.css'
 
 /** Loaded after first paint — keeps initial JS smaller for faster INP on hero/header interactions */
@@ -37,6 +39,7 @@ export default function MarketingBelowFold() {
       <Testimonials />
       <Apps />
       {config.showTeamSection && <Team />}
+      <AchievementsSection />
       <Contact />
     </>
   )

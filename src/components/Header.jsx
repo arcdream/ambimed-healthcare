@@ -15,6 +15,7 @@ const marketingNavBase = [
   { id: 'testimonials', label: 'Feedback' },
   { id: 'apps', label: 'Our Apps' },
   { id: 'team', label: 'Team' },
+  { id: 'achievements', label: 'Recognition' },
   { id: 'contact', label: 'Contact' },
 ]
 
@@ -22,6 +23,7 @@ const appNavLinks = [
   { to: '/', label: 'Website home' },
   { to: '/#services', label: 'Services' },
   { to: '/#services-pricing', label: 'Our Pricing' },
+  { to: '/#achievements', label: 'Recognition' },
   { to: '/#contact', label: 'Contact' },
   { to: '/app/booking', label: 'Book care' },
   { to: '/app/history', label: 'My bookings' },
