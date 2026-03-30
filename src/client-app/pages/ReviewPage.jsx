@@ -6,6 +6,7 @@ import { useMetadata } from '../context/MetadataContext'
 import { bookingService } from '../services/bookingService'
 import { addressService } from '../services/addressService'
 import { fetchDiscountForClient } from '../services/discountService'
+import { discountedAmount, formatInr } from '../lib/pricingDisplay'
 import { clearPendingBookingDraft, getPendingBookingDraft } from '../lib/pendingBooking'
 
 export function ReviewPage() {
@@ -66,9 +67,10 @@ export function ReviewPage() {
   const endStr = dayjs(endDate).format('YYYY-MM-DD')
   const days = Math.max(1, dayjs(endStr).diff(dayjs(startStr), 'day') + 1)
   const subtype = services.flatMap((s) => s.subtypes ?? []).find((st) => st.id === serviceId)
-  const perDay = subtype?.price ?? 0
-  const total = days * perDay
+  const listPerDay = subtype?.price ?? 0
   const discountPct = discount?.discountPct ?? 0
+  const dealPerDay = discountedAmount(listPerDay, discountPct)
+  const total = days * listPerDay
   const discountAmount = total * (discountPct / 100)
   const finalPrice = total - discountAmount
 
@@ -176,15 +178,28 @@ export function ReviewPage() {
         <p>
           Duration: {days} {days === 1 ? 'day' : 'days'}
         </p>
-        <p>Per day: ₹{Number(perDay).toLocaleString('en-IN')}</p>
-        <p>Total: ₹{Number(total).toLocaleString('en-IN')}</p>
+        <p>
+          Per day:{' '}
+          {discountPct > 0 ? (
+            <>
+              <span style={{ textDecoration: 'line-through', opacity: 0.65 }}>{formatInr(listPerDay)}</span>{' '}
+              <span style={{ fontWeight: 600 }}>{formatInr(dealPerDay)}</span>
+              <span className="muted" style={{ marginLeft: '0.35rem' }}>
+                ({discountPct}% off)
+              </span>
+            </>
+          ) : (
+            formatInr(listPerDay)
+          )}
+        </p>
+        <p>Subtotal ({days} {days === 1 ? 'day' : 'days'}): {formatInr(total)}</p>
         {discountPct > 0 && (
           <p>
-            Discount: {discountPct}% (₹{Number(discountAmount).toLocaleString('en-IN')})
+            Discount ({discountPct}%): {formatInr(discountAmount)}
           </p>
         )}
         <p>
-          <strong>Final (estimate): ₹{Number(finalPrice).toLocaleString('en-IN')}</strong>
+          <strong>Final (estimate): {formatInr(finalPrice)}</strong>
         </p>
       </div>
 

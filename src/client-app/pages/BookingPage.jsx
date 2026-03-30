@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useMetadata } from '../context/MetadataContext'
 import { addressService } from '../services/addressService'
+import { fetchDefaultDiscount } from '../services/discountService'
+import { discountedAmount, formatInr } from '../lib/pricingDisplay'
 import { clearPendingBookingDraft, getPendingBookingDraft, savePendingBookingDraft } from '../lib/pendingBooking'
 
 /** Local calendar date only — avoids UTC midnight bugs from parsing "YYYY-MM-DD" with Date/dayjs. */
@@ -65,10 +67,25 @@ export function BookingPage() {
   const [savingAddr, setSavingAddr] = useState(false)
   const resumeHydratedRef = useRef(false)
   const [error, setError] = useState('')
+  /** Same as marketing “Our Pricing”: default_discount.discount_pct */
+  const [defaultDiscountPct, setDefaultDiscountPct] = useState(0)
 
   useEffect(() => {
     resumeHydratedRef.current = false
   }, [serviceId])
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const d = await fetchDefaultDiscount()
+      if (cancelled) return
+      const pct = d?.discountPct ?? 0
+      setDefaultDiscountPct(Number.isFinite(pct) ? Math.min(100, Math.max(0, pct)) : 0)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   /** When API omits this, default to 30 days (common business rule). Explicit 1+ from DB still wins. */
   const minBookingDays = Math.max(
@@ -272,6 +289,7 @@ export function BookingPage() {
   }
 
   const reviewCtaLabel = user?.id ? 'Review booking' : 'Continue to sign in'
+  const showDefaultDiscount = defaultDiscountPct > 0
 
   return (
     <div>
@@ -290,22 +308,36 @@ export function BookingPage() {
 
       <div className="client-app-card">
         <h2>Shift option</h2>
-        {subtypes.map((sub) => (
-          <button
-            key={sub.id}
-            type="button"
-            className={`shift-option ${selectedSubtype?.id === sub.id ? 'selected' : ''}`}
-            onClick={() => setSelectedSubtype(sub)}
-          >
-            <div>
-              <div>{sub.userFriendlyName}</div>
-              <div className="muted" style={{ fontSize: '0.85rem' }}>
-                {sub.shiftTypeName} • {sub.shiftDurationHours}h • ₹{sub.price}
+        {subtypes.map((sub) => {
+          const listPrice = sub.price
+          const dealPrice = discountedAmount(listPrice, defaultDiscountPct)
+          return (
+            <button
+              key={sub.id}
+              type="button"
+              className={`shift-option ${selectedSubtype?.id === sub.id ? 'selected' : ''}`}
+              onClick={() => setSelectedSubtype(sub)}
+            >
+              <div>
+                <div>{sub.userFriendlyName}</div>
+                <div className="muted" style={{ fontSize: '0.85rem' }}>
+                  {sub.shiftTypeName} • {sub.shiftDurationHours}h •{' '}
+                  {showDefaultDiscount ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', opacity: 0.65 }}>{formatInr(listPrice)}</span>{' '}
+                      <span style={{ color: 'var(--color-bright, #0078d4)', fontWeight: 600 }}>{formatInr(dealPrice)}</span>
+                      <span style={{ fontSize: '0.78rem', marginLeft: '0.35rem' }}>({defaultDiscountPct}% off)</span>
+                    </>
+                  ) : (
+                    <span>{formatInr(listPrice)}</span>
+                  )}{' '}
+                  / day
+                </div>
               </div>
-            </div>
-            <span>{selectedSubtype?.id === sub.id ? '●' : '○'}</span>
-          </button>
-        ))}
+              <span>{selectedSubtype?.id === sub.id ? '●' : '○'}</span>
+            </button>
+          )
+        })}
       </div>
 
       {service.hasGenderPreference && (
