@@ -206,15 +206,25 @@ export function ServicesPricingSection() {
         )}
 
         {!loading && !error && services.length > 0 && (
-          <motion.p
-            className="services-pricing-footnote"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Prices reflect our catalogue; final totals may vary by dates and add-ons. Discount applies
-            where eligible per our terms.
-          </motion.p>
+          <>
+            <motion.p
+              className="services-pricing-footnote"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              Prices reflect our catalogue; final totals may vary by dates and add-ons. Discount applies
+              where eligible per our terms.
+            </motion.p>
+            <motion.p
+              className="services-pricing-caregiver-note"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              Prices may vary slightly based on the experience and qualifications of the caregiver.
+            </motion.p>
+          </>
         )}
       </div>
     </section>

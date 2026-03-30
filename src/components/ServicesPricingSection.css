@@ -29,6 +29,17 @@
   opacity: 0.82;
 }
 
+.services-pricing-caregiver-note {
+  margin: 1rem auto 0;
+  max-width: 40rem;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--color-deep);
+  opacity: 0.88;
+  font-style: italic;
+}
+
 .services-pricing-promo-pill {
   display: inline-flex;
   align-items: center;
