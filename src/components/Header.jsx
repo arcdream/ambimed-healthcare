@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { config } from '../data/config'
@@ -9,17 +9,21 @@ const LOGO_IMG = '/assets/ambimed-logo.png'
 const marketingNavBase = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
+  { id: 'services-pricing', label: 'Our Pricing' },
   { id: 'about', label: 'About' },
   { id: 'caregivers', label: 'Caregivers' },
   { id: 'testimonials', label: 'Feedback' },
   { id: 'apps', label: 'Our Apps' },
   { id: 'team', label: 'Team' },
+  { id: 'achievements', label: 'Recognition' },
   { id: 'contact', label: 'Contact' },
 ]
 
 const appNavLinks = [
   { to: '/', label: 'Website home' },
   { to: '/#services', label: 'Services' },
+  { to: '/#services-pricing', label: 'Our Pricing' },
+  { to: '/#achievements', label: 'Recognition' },
   { to: '/#contact', label: 'Contact' },
   { to: '/app/booking', label: 'Book care' },
   { to: '/app/history', label: 'My bookings' },
@@ -46,11 +50,27 @@ export function Header() {
     return () => document.removeEventListener('click', close)
   }, [])
 
-  const scrollTo = (id) => {
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  /**
+   * Close menu first, then scroll after layout settles (mobile menu animation / iOS).
+   * Retries briefly if the target is not mounted yet.
+   */
+  const scrollTo = useCallback((id) => {
     setOpen(false)
-  }
+    window.setTimeout(() => {
+      const tryScroll = () => {
+        const el = document.getElementById(id)
+        if (!el) return false
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return true
+      }
+      if (tryScroll()) return
+      let n = 0
+      const t = window.setInterval(() => {
+        n += 1
+        if (tryScroll() || n >= 40) window.clearInterval(t)
+      }, 50)
+    }, 280)
+  }, [])
 
   const displayName = user?.firstName?.trim() || (user?.mobileNumber ? `…${String(user.mobileNumber).slice(-4)}` : 'there')
   const avatarLetter = (
@@ -154,10 +174,16 @@ export function Header() {
               Log in
             </Link>
           )}
-          <button type="button" className="menu-toggle" aria-label="Toggle menu" onClick={() => setOpen(!open)}>
-            <span className={open ? 'open' : ''} />
-            <span className={open ? 'open' : ''} />
-            <span className={open ? 'open' : ''} />
+          <button
+            type="button"
+            className="menu-toggle"
+            aria-expanded={open}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            onClick={() => setOpen(!open)}
+          >
+            <span className="menu-toggle-glyph" aria-hidden>
+              {open ? '✕' : '☰'}
+            </span>
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { AuthProvider } from './client-app/context/AuthContext.jsx'
 import { ClientAppProviders } from './client-app/ClientAppProviders.jsx'
 import MarketingSite from './MarketingSite.jsx'
 import { RouteFallback } from './components/RouteFallback.jsx'
+import { WhatsAppFloat } from './components/WhatsAppFloat.jsx'
 
 const TermsPage = lazy(() => import('./components/TermsPage.jsx'))
 const ClientAppRoutes = lazy(() =>
@@ -35,6 +36,7 @@ export default function App() {
           />
           <Route path="/*" element={<MarketingSite />} />
         </Routes>
+        <WhatsAppFloat />
       </BrowserRouter>
     </AuthProvider>
   )
