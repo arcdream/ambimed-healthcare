@@ -33,7 +33,7 @@ export function DoctorWorkspacePage() {
       setLoading(true)
       setError(null)
       try {
-        const { stats, fetchError } = await referralService.fetchForDoctor(user.id)
+        const { stats, fetchError } = await referralService.fetchReferralDashboardForUser(user.id)
         if (!cancelled) {
           setStats(stats)
           setError(fetchError ?? null)
@@ -51,7 +51,7 @@ export function DoctorWorkspacePage() {
   }, [user?.id])
 
   const displayName =
-    [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'Doctor'
+    [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'there'
 
   return (
     <div className="doctor-workspace">
@@ -60,7 +60,8 @@ export function DoctorWorkspacePage() {
           <p className="doctor-workspace-kicker">Referral hub</p>
           <h1 className="doctor-workspace-title">Welcome, {displayName}</h1>
           <p className="doctor-workspace-sub">
-            Track referrals you have made and incentive amounts in one place.
+            Track referral incentives tied to you as a referring doctor and/or to facilities linked to your
+            organization.
           </p>
         </div>
       </header>
@@ -178,6 +179,7 @@ function ReferralsTablePanel({ stats, formatDate }) {
             <thead>
               <tr>
                 <th scope="col">Date</th>
+                <th scope="col">Facility</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Status</th>
                 <th scope="col">Settled on</th>
@@ -188,6 +190,9 @@ function ReferralsTablePanel({ stats, formatDate }) {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td data-label="Date">{formatDate(r.referral_date)}</td>
+                  <td data-label="Facility" className="doctor-workspace-cell-mono">
+                    {r.facility_id ? `${String(r.facility_id).slice(0, 8)}…` : '—'}
+                  </td>
                   <td data-label="Amount">{formatInr(r.referral_amount)}</td>
                   <td data-label="Status">
                     <span
@@ -214,8 +219,9 @@ function AboutPanel() {
       <h2 className="doctor-workspace-section-title">How your referral hub works</h2>
       <ul className="doctor-workspace-about-list">
         <li>
-          <strong>Referrals</strong> are recorded when you direct a patient or facility to Ambimed. Each
-          row shows the incentive amount linked to that referral.
+          <strong>Doctor-linked</strong> rows match your profile as the referring doctor.{' '}
+          <strong>Corporate / facility</strong> rows appear when your account is tied to an organization
+          facility and the referral is recorded against that facility.
         </li>
         <li>
           <strong>Pending</strong> means the incentive has not been paid or finalized yet.{' '}

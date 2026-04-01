@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { doctorService } from './doctorService'
+import { organizationService } from './organizationService'
 
 export type ReferralRow = {
   id: number
@@ -21,6 +22,14 @@ export type DoctorReferralStats = {
   referrals: ReferralRow[]
 }
 
+export type ReferralHubRoles = {
+  isDoctor: boolean
+  isCorporateUser: boolean
+}
+
+const SELECT_COLUMNS =
+  'id, created_at, doctor_id, facility_id, referral_amount, referral_date, is_settled, settlement_date'
+
 /** referrals.doctor_id is uuid — never pass serial ints (e.g. "1") from public.doctors.id */
 function isUuidLike(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -39,57 +48,126 @@ function emptyStats(): DoctorReferralStats {
   }
 }
 
+function aggregateStats(rows: ReferralRow[]): DoctorReferralStats {
+  let settledCount = 0
+  let pendingCount = 0
+  let totalEarnedSettled = 0
+  let totalPendingAmount = 0
+
+  for (const r of rows) {
+    if (r.is_settled) {
+      settledCount += 1
+      totalEarnedSettled += Number(r.referral_amount) || 0
+    } else {
+      pendingCount += 1
+      totalPendingAmount += Number(r.referral_amount) || 0
+    }
+  }
+
+  return {
+    totalCount: rows.length,
+    settledCount,
+    pendingCount,
+    totalEarnedSettled,
+    totalPendingAmount,
+    referrals: rows,
+  }
+}
+
+function mergeDedupeSort(rows: ReferralRow[]): ReferralRow[] {
+  const byId = new Map<number, ReferralRow>()
+  for (const r of rows) {
+    byId.set(r.id, r)
+  }
+  return Array.from(byId.values()).sort((a, b) => {
+    const da = new Date(a.referral_date).getTime()
+    const db = new Date(b.referral_date).getTime()
+    if (db !== da) return db - da
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
+}
+
 export const referralService = {
   /**
-   * Loads rows where referrals.doctor_id matches the signed-in doctor.
-   * Filters by auth uid; if public.doctors.id is also a uuid, includes that too (not serial ints).
+   * Doctor path: `referrals.doctor_id` = auth uid (and uuid `doctors.id` when applicable).
+   * Corporate path: `referrals.facility_id` in facility ids from `user_organizations` for this user.
+   * When both apply, results are merged and deduped by `referrals.id`.
    */
-  async fetchForDoctor(authUserId: string): Promise<{ stats: DoctorReferralStats; fetchError?: string }> {
-    const doctorRowId = await doctorService.fetchDoctorRowIdForAuthUid(authUserId)
-    const candidateIds = [authUserId]
-    if (doctorRowId && isUuidLike(doctorRowId) && doctorRowId !== authUserId) {
-      candidateIds.push(doctorRowId)
-    }
+  async fetchReferralDashboard(
+    authUserId: string,
+    roles: ReferralHubRoles,
+  ): Promise<{ stats: DoctorReferralStats; fetchError?: string }> {
+    const collected: ReferralRow[] = []
+    const errors: string[] = []
 
-    const { data, error } = await supabase
-      .from('referrals')
-      .select(
-        'id, created_at, doctor_id, facility_id, referral_amount, referral_date, is_settled, settlement_date',
-      )
-      .in('doctor_id', candidateIds)
-      .order('referral_date', { ascending: false })
-      .order('created_at', { ascending: false })
+    if (roles.isDoctor) {
+      const doctorRowId = await doctorService.fetchDoctorRowIdForAuthUid(authUserId)
+      const candidateIds = [authUserId]
+      if (doctorRowId && isUuidLike(doctorRowId) && doctorRowId !== authUserId) {
+        candidateIds.push(doctorRowId)
+      }
 
-    if (error) {
-      console.error('referrals fetch:', error)
-      return { stats: emptyStats(), fetchError: error.message }
-    }
+      const { data, error } = await supabase
+        .from('referrals')
+        .select(SELECT_COLUMNS)
+        .in('doctor_id', candidateIds)
+        .order('referral_date', { ascending: false })
+        .order('created_at', { ascending: false })
 
-    const rows = (data ?? []) as ReferralRow[]
-    let settledCount = 0
-    let pendingCount = 0
-    let totalEarnedSettled = 0
-    let totalPendingAmount = 0
-
-    for (const r of rows) {
-      if (r.is_settled) {
-        settledCount += 1
-        totalEarnedSettled += Number(r.referral_amount) || 0
+      if (error) {
+        console.error('referrals fetch (doctor_id):', error)
+        errors.push(error.message)
       } else {
-        pendingCount += 1
-        totalPendingAmount += Number(r.referral_amount) || 0
+        collected.push(...((data ?? []) as ReferralRow[]))
       }
     }
 
-    return {
-      stats: {
-        totalCount: rows.length,
-        settledCount,
-        pendingCount,
-        totalEarnedSettled,
-        totalPendingAmount,
-        referrals: rows,
-      },
+    if (roles.isCorporateUser) {
+      const facilityIds = await organizationService.getFacilityIdsForUser(authUserId)
+      if (facilityIds.length > 0) {
+        const { data, error } = await supabase
+          .from('referrals')
+          .select(SELECT_COLUMNS)
+          .in('facility_id', facilityIds)
+          .order('referral_date', { ascending: false })
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('referrals fetch (facility_id):', error)
+          errors.push(error.message)
+        } else {
+          collected.push(...((data ?? []) as ReferralRow[]))
+        }
+      }
     }
+
+    if (!roles.isDoctor && !roles.isCorporateUser) {
+      return { stats: emptyStats() }
+    }
+
+    const merged = mergeDedupeSort(collected)
+    const stats = aggregateStats(merged)
+
+    if (merged.length === 0 && errors.length > 0) {
+      return { stats: emptyStats(), fetchError: errors.join(' ') }
+    }
+
+    return { stats }
+  },
+
+  /**
+   * Resolves doctor vs corporate from the database (works even if session `User` flags are stale).
+   */
+  async fetchReferralDashboardForUser(authUserId: string): Promise<{ stats: DoctorReferralStats; fetchError?: string }> {
+    const [isDoctor, isCorporateUser] = await Promise.all([
+      doctorService.isDoctorUid(authUserId),
+      organizationService.isCorporateUser(authUserId),
+    ])
+    return this.fetchReferralDashboard(authUserId, { isDoctor, isCorporateUser })
+  },
+
+  /** @deprecated use fetchReferralDashboardForUser */
+  async fetchForDoctor(authUserId: string): Promise<{ stats: DoctorReferralStats; fetchError?: string }> {
+    return this.fetchReferralDashboardForUser(authUserId)
   },
 }

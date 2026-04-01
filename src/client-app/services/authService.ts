@@ -146,6 +146,8 @@ export const authService = {
         lastName: profile?.last_name?.trim() || data.user.user_metadata?.lastName || '',
         email: profile?.email ?? data.user.email,
         referralHubAccess: isDoctorUid || isCorporateUser,
+        isDoctor: isDoctorUid,
+        isCorporateUser,
       }
 
       // Save session
@@ -188,6 +190,8 @@ export const authService = {
         lastName: profile?.last_name?.trim() || sbSession.user.user_metadata?.lastName || '',
         email: profile?.email ?? sbSession.user.email,
         referralHubAccess: isDoctorUid || isCorporateUser,
+        isDoctor: isDoctorUid,
+        isCorporateUser,
       }
       await sessionManager.saveSession(user)
       return user
@@ -212,6 +216,8 @@ export const authService = {
       lastName: profile?.last_name?.trim() || session.user.lastName,
       email: profile?.email ?? session.user.email,
       referralHubAccess: isDoctorUid || isCorporateUser,
+      isDoctor: isDoctorUid,
+      isCorporateUser,
     }
     await sessionManager.saveSession(user)
     return user

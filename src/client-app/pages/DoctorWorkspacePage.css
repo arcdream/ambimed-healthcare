@@ -264,6 +264,12 @@
   white-space: nowrap;
 }
 
+.doctor-workspace-cell-mono {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.8rem;
+  color: rgba(29, 61, 114, 0.85);
+}
+
 .doctor-workspace-badge {
   display: inline-flex;
   align-items: center;

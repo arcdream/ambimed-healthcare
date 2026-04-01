@@ -8,6 +8,10 @@ export interface User {
   email?: string
   /** Doctor or corporate user — can open the referral hub (`/app/doctor`). */
   referralHubAccess?: boolean
+  /** Referrals where `referrals.doctor_id` matches this user (via doctors / auth uid). */
+  isDoctor?: boolean
+  /** Referrals for `referrals.facility_id` from `user_organizations`. */
+  isCorporateUser?: boolean
 }
 
 export interface Address {
