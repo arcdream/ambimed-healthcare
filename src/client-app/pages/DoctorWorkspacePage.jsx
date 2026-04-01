@@ -33,8 +33,11 @@ export function DoctorWorkspacePage() {
       setLoading(true)
       setError(null)
       try {
-        const s = await referralService.fetchForDoctor(user.id)
-        if (!cancelled) setStats(s)
+        const { stats, fetchError } = await referralService.fetchForDoctor(user.id)
+        if (!cancelled) {
+          setStats(stats)
+          setError(fetchError ?? null)
+        }
       } catch (e) {
         console.error(e)
         if (!cancelled) setError('Could not load referral data. Try again later.')
@@ -133,8 +136,8 @@ function SummaryPanel({ stats, formatDate }) {
       <section className="doctor-workspace-card">
         <h2 className="doctor-workspace-section-title">Settled referrals</h2>
         <p className="doctor-workspace-section-lead muted">
-          When an incentive is marked settled, we show the referred person&apos;s name as recorded by
-          Ambimed.
+          Settled incentives are listed below with amount and dates. Referral party details may be added to
+          your ledger by the operations team when available.
         </p>
         {settledRows.length === 0 ? (
           <p className="muted">No settled referrals yet.</p>
@@ -143,9 +146,7 @@ function SummaryPanel({ stats, formatDate }) {
             {settledRows.map((r) => (
               <li key={r.id} className="doctor-workspace-settled-item">
                 <div className="doctor-workspace-settled-main">
-                  <span className="doctor-workspace-settled-name">
-                    {r.referred_name?.trim() || 'Name on file'}
-                  </span>
+                  <span className="doctor-workspace-settled-name">Referral #{r.id}</span>
                   <span className="doctor-workspace-settled-amt">{formatInr(r.referral_amount)}</span>
                 </div>
                 <div className="doctor-workspace-settled-meta">
@@ -180,7 +181,7 @@ function ReferralsTablePanel({ stats, formatDate }) {
                 <th scope="col">Amount</th>
                 <th scope="col">Status</th>
                 <th scope="col">Settled on</th>
-                <th scope="col">Referred person</th>
+                <th scope="col">Ref</th>
               </tr>
             </thead>
             <tbody>
@@ -196,9 +197,7 @@ function ReferralsTablePanel({ stats, formatDate }) {
                     </span>
                   </td>
                   <td data-label="Settled on">{r.settlement_date ? formatDate(r.settlement_date) : '—'}</td>
-                  <td data-label="Referred person">
-                    {r.is_settled ? r.referred_name?.trim() || '—' : '—'}
-                  </td>
+                  <td data-label="Ref">#{r.id}</td>
                 </tr>
               ))}
             </tbody>
@@ -220,8 +219,7 @@ function AboutPanel() {
         </li>
         <li>
           <strong>Pending</strong> means the incentive has not been paid or finalized yet.{' '}
-          <strong>Settled</strong> means it has been processed; we then show the referred person&apos;s
-          name when available.
+          <strong>Settled</strong> means it has been processed and recorded in your ledger.
         </li>
         <li>
           Totals on the summary screen are based on rows in your ledger. For questions about a specific

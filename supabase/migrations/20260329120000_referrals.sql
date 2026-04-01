@@ -10,7 +10,6 @@ create table if not exists public.referrals (
   referral_date date not null default (current_date),
   is_settled boolean not null default false,
   settlement_date date null,
-  referred_name text null,
   constraint referrals_pkey primary key (id),
   constraint referrals_doctor_id_fkey foreign key (doctor_id) references profiles (user_id) on delete set null,
   constraint referrals_facility_id_fkey foreign key (facility_id) references facilities (id) on delete set null
@@ -18,8 +17,6 @@ create table if not exists public.referrals (
 
 create index if not exists referrals_doctor_id_idx on public.referrals (doctor_id);
 create index if not exists referrals_referral_date_idx on public.referrals (referral_date desc);
-
-alter table public.referrals add column if not exists referred_name text null;
 
 alter table public.referrals enable row level security;
 
@@ -33,5 +30,3 @@ create policy "referrals_select_own_as_doctor"
 
 -- Optional: service role / admin inserts — adjust for your backend; app may be read-only for doctors.
 -- create policy "referrals_insert_admin" on public.referrals for insert to authenticated with check (false);
-
-comment on column public.referrals.referred_name is 'Display name for the referred person (shown when settled in doctor hub).';
