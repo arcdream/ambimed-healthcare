@@ -3,6 +3,7 @@ import { sessionManager } from './sessionManager'
 import { supabase } from '../lib/supabase'
 import { profileService } from './profileService'
 import { doctorService } from './doctorService'
+import { organizationService } from './organizationService'
 
 const NOT_CLIENT_MESSAGE =
   "This phone number is already registered as a Caregiver on the Ambimed Caregiver app and cannot be used on the Ambimed app.\n\nFor assistance, please contact customer care at +91 8726568502."
@@ -13,10 +14,12 @@ const NOT_REGISTERED_MESSAGE =
 function canUseClientApp(
   profile: Awaited<ReturnType<typeof profileService.fetchProfile>>,
   isDoctorUid: boolean,
+  isCorporateUser: boolean,
 ): boolean {
   if (profile?.role === 'worker') return false
   if (profile?.role === 'client' || profile?.role === 'doctor') return true
   if (isDoctorUid) return true
+  if (isCorporateUser) return true
   return false
 }
 
@@ -115,7 +118,10 @@ export const authService = {
       }
 
       const profile = await profileService.fetchProfile(data.user.id)
-      const isDoctorUid = await doctorService.isDoctorUid(data.user.id)
+      const [isDoctorUid, isCorporateUser] = await Promise.all([
+        doctorService.isDoctorUid(data.user.id),
+        organizationService.isCorporateUser(data.user.id),
+      ])
 
       if (profile?.role === 'worker') {
         await supabase.auth.signOut()
@@ -125,7 +131,7 @@ export const authService = {
         }
       }
 
-      if (!canUseClientApp(profile, isDoctorUid)) {
+      if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
         await supabase.auth.signOut()
         return {
           success: false,
@@ -139,7 +145,7 @@ export const authService = {
         firstName: profile?.first_name?.trim() || data.user.user_metadata?.firstName || '',
         lastName: profile?.last_name?.trim() || data.user.user_metadata?.lastName || '',
         email: profile?.email ?? data.user.email,
-        isDoctor: isDoctorUid,
+        referralHubAccess: isDoctorUid || isCorporateUser,
       }
 
       // Save session
@@ -167,8 +173,11 @@ export const authService = {
     } = await supabase.auth.getSession()
     if (sbSession?.user) {
       const profile = await profileService.fetchProfile(sbSession.user.id)
-      const isDoctorUid = await doctorService.isDoctorUid(sbSession.user.id)
-      if (!canUseClientApp(profile, isDoctorUid)) {
+      const [isDoctorUid, isCorporateUser] = await Promise.all([
+        doctorService.isDoctorUid(sbSession.user.id),
+        organizationService.isCorporateUser(sbSession.user.id),
+      ])
+      if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
         await this.logout()
         return null
       }
@@ -178,7 +187,7 @@ export const authService = {
         firstName: profile?.first_name?.trim() || sbSession.user.user_metadata?.firstName || '',
         lastName: profile?.last_name?.trim() || sbSession.user.user_metadata?.lastName || '',
         email: profile?.email ?? sbSession.user.email,
-        isDoctor: isDoctorUid,
+        referralHubAccess: isDoctorUid || isCorporateUser,
       }
       await sessionManager.saveSession(user)
       return user
@@ -188,8 +197,11 @@ export const authService = {
     if (!session?.user) return null
 
     const profile = await profileService.fetchProfile(session.user.id)
-    const isDoctorUid = await doctorService.isDoctorUid(session.user.id)
-    if (!canUseClientApp(profile, isDoctorUid)) {
+    const [isDoctorUid, isCorporateUser] = await Promise.all([
+      doctorService.isDoctorUid(session.user.id),
+      organizationService.isCorporateUser(session.user.id),
+    ])
+    if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
       await this.logout()
       return null
     }
@@ -199,7 +211,7 @@ export const authService = {
       firstName: profile?.first_name?.trim() || session.user.firstName,
       lastName: profile?.last_name?.trim() || session.user.lastName,
       email: profile?.email ?? session.user.email,
-      isDoctor: isDoctorUid,
+      referralHubAccess: isDoctorUid || isCorporateUser,
     }
     await sessionManager.saveSession(user)
     return user

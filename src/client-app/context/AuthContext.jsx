@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         isAuthenticated: !!user,
-        isDoctor: !!user?.isDoctor,
+        referralHubAccess: !!user?.referralHubAccess,
         isLoading,
         login,
         logout,

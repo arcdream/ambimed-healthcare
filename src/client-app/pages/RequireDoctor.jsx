@@ -11,6 +11,6 @@ export function RequireDoctor() {
     )
   }
   if (!user) return <Navigate to="/app/login" replace state={{ from: window.location.pathname }} />
-  if (!user.isDoctor) return <Navigate to="/app/booking" replace />
+  if (!user.referralHubAccess) return <Navigate to="/app/booking" replace />
   return <Outlet />
 }
