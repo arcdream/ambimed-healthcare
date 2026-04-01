@@ -36,3 +36,10 @@ npm cache clean --force;
 npm install; 
 npm run build
 ```
+
+# Important Profile
+Doctor - 9972940155
+
+Organization - Manipal Hospitals
+Facility - Manipal Bengaluru 
+User - 919972911111

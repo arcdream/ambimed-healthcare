@@ -40,11 +40,20 @@ export function LoginPage() {
     )
   }
 
+  const onPhoneChange = (e) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+    setPhone(digits)
+  }
+
   const sendOtp = async (e) => {
     e.preventDefault()
     setError('')
     if (!acceptedTerms) {
       setError('Please accept the terms and conditions to continue.')
+      return
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      setError('Enter a valid 10-digit mobile number.')
       return
     }
     setLoading(true)
@@ -108,10 +117,14 @@ export function LoginPage() {
             <input
               id="phone"
               type="tel"
-              placeholder="10-digit mobile or +91…"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              placeholder="10-digit number"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoComplete="tel"
+              onChange={onPhoneChange}
+              maxLength={10}
+              pattern="[0-9]{10}"
+              title="10-digit mobile number"
               required
             />
             <div className="login-terms">
