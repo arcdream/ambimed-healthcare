@@ -43,6 +43,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         isAuthenticated: !!user,
+        isDoctor: !!user?.isDoctor,
         isLoading,
         login,
         logout,

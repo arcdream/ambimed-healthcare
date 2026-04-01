@@ -7,6 +7,8 @@ import { AppHomePage } from './pages/AppHomePage'
 import { BookingPage } from './pages/BookingPage'
 import { ReviewPage } from './pages/ReviewPage'
 import { HistoryPage } from './pages/HistoryPage'
+import { DoctorWorkspacePage } from './pages/DoctorWorkspacePage'
+import { RequireDoctor } from './pages/RequireDoctor'
 import './ClientApp.css'
 
 export function ClientAppRoutes() {
@@ -21,6 +23,9 @@ export function ClientAppRoutes() {
         <Route element={<RequireAuth />}>
           <Route path="book/review" element={<ReviewPage />} />
           <Route path="history" element={<HistoryPage />} />
+          <Route element={<RequireDoctor />}>
+            <Route path="doctor" element={<DoctorWorkspacePage />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/app/booking" replace />} />
       </Route>

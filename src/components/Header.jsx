@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { config } from '../data/config'
@@ -32,7 +32,7 @@ const appNavLinks = [
 export function Header() {
   const location = useLocation()
   const isApp = location.pathname.startsWith('/app')
-  const { user, isAuthenticated, isLoading, logout } = useAuth()
+  const { user, isAuthenticated, isDoctor, isLoading, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -71,6 +71,15 @@ export function Header() {
       }, 50)
     }, 280)
   }, [])
+
+  const appNavLinksResolved = useMemo(() => {
+    const links = [...appNavLinks]
+    if (isDoctor) {
+      const idx = links.findIndex((l) => l.to === '/app/history')
+      if (idx >= 0) links.splice(idx + 1, 0, { to: '/app/doctor', label: 'Referral hub' })
+    }
+    return links
+  }, [isDoctor])
 
   const displayName = user?.firstName?.trim() || (user?.mobileNumber ? `…${String(user.mobileNumber).slice(-4)}` : 'there')
   const avatarLetter = (
@@ -115,6 +124,11 @@ export function Header() {
                 <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
                   My bookings
                 </Link>
+                {isDoctor && (
+                  <Link to="/app/doctor" onClick={() => setUserMenuOpen(false)}>
+                    Referral hub
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="header-user-signout"
@@ -150,7 +164,7 @@ export function Header() {
 
         <nav className="nav desktop">
           {isApp
-            ? appNavLinks.map((item) => (
+            ? appNavLinksResolved.map((item) => (
                 <Link key={item.to + item.label} to={item.to} className="nav-link">
                   {item.label}
                 </Link>
@@ -198,7 +212,7 @@ export function Header() {
             transition={{ duration: 0.25 }}
           >
             {isApp
-              ? appNavLinks.map((item) => (
+              ? appNavLinksResolved.map((item) => (
                   <Link key={item.to + item.label} to={item.to} className="nav-link" onClick={() => setOpen(false)}>
                     {item.label}
                   </Link>
@@ -226,6 +240,11 @@ export function Header() {
                 <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>
                   My bookings
                 </Link>
+                {isDoctor && (
+                  <Link to="/app/doctor" className="nav-link" onClick={() => setOpen(false)}>
+                    Referral hub
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="nav-link nav-link--signout"

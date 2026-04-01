@@ -13,7 +13,7 @@ export function getProfileImagePublicUrl(storagePath: string | null): string | n
 
 type ProfileFromDB = {
   user_id: string
-  role: 'client' | 'worker' | 'admin'
+  role: 'client' | 'worker' | 'admin' | 'doctor'
   first_name: string | null
   last_name: string | null
   email: string | null
