@@ -10,6 +10,8 @@ export type ReferralRow = {
   created_at: string
   doctor_id: string | null
   facility_id: string | null
+  /** From `facilities.facility_name` when resolved (UI). */
+  facility_name: string | null
   referral_amount: number
   referral_date: string
   is_settled: boolean
@@ -106,6 +108,32 @@ function mergeDedupeSort(rows: ReferralRow[]): ReferralRow[] {
   })
 }
 
+/** Loads `facilities.facility_name` for distinct `facility_id` values on referral rows. */
+async function attachFacilityNames(rows: ReferralRow[]): Promise<ReferralRow[]> {
+  const ids = [...new Set(rows.map((r) => r.facility_id).filter(Boolean) as string[])]
+  if (ids.length === 0) {
+    return rows.map((r) => ({ ...r, facility_name: null }))
+  }
+
+  const { data, error } = await supabase.from('facilities').select('id, facility_name').in('id', ids)
+
+  if (error) {
+    console.error('facilities facility_name for referrals:', error)
+    return rows.map((r) => ({ ...r, facility_name: null }))
+  }
+
+  const nameById = new Map<string, string>()
+  for (const f of data ?? []) {
+    const row = f as { id: string; facility_name: string }
+    nameById.set(row.id, row.facility_name?.trim() || '')
+  }
+
+  return rows.map((r) => ({
+    ...r,
+    facility_name: r.facility_id ? nameById.get(r.facility_id) || null : null,
+  }))
+}
+
 export const referralService = {
   /**
    * Doctor path: `referrals.doctor_id` = auth uid (and uuid `doctors.id` when applicable).
@@ -137,7 +165,12 @@ export const referralService = {
         console.error('referrals fetch (doctor_id):', error)
         errors.push(error.message)
       } else {
-        collected.push(...((data ?? []) as ReferralRow[]))
+        collected.push(
+          ...((data ?? []) as Omit<ReferralRow, 'facility_name'>[]).map((r) => ({
+            ...r,
+            facility_name: null as string | null,
+          })),
+        )
       }
     }
 
@@ -155,7 +188,12 @@ export const referralService = {
           console.error('referrals fetch (facility_id):', error)
           errors.push(error.message)
         } else {
-          collected.push(...((data ?? []) as ReferralRow[]))
+          collected.push(
+            ...((data ?? []) as Omit<ReferralRow, 'facility_name'>[]).map((r) => ({
+              ...r,
+              facility_name: null as string | null,
+            })),
+          )
         }
       }
     }
@@ -165,7 +203,8 @@ export const referralService = {
     }
 
     const merged = mergeDedupeSort(collected)
-    const stats = aggregateStats(merged)
+    const withFacilityNames = await attachFacilityNames(merged)
+    const stats = aggregateStats(withFacilityNames)
 
     if (merged.length === 0 && errors.length > 0) {
       return { stats: emptyStats(), fetchError: errors.join(' ') }

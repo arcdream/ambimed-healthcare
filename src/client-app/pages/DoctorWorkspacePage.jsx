@@ -337,8 +337,8 @@ function ReferralsTablePanel({ stats, formatDate }) {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td data-label="Date">{formatDate(r.referral_date)}</td>
-                  <td data-label="Facility" className="doctor-workspace-cell-mono">
-                    {r.facility_id ? `${String(r.facility_id).slice(0, 8)}…` : '—'}
+                  <td data-label="Facility">
+                    {r.facility_name?.trim() ? r.facility_name : '—'}
                   </td>
                   <td data-label="Referral stage">
                     {formatReferralStage(r.referral_status) ? (
