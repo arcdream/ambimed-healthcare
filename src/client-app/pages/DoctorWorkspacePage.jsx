@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { referralService } from '../services/referralService'
+import {
+  referralService,
+  filterReferralsByStatus,
+  buildStatsFromReferrals,
+} from '../services/referralService'
 import { organizationService } from '../services/organizationService'
 import { formatInr } from '../lib/pricingDisplay'
 import './DoctorWorkspacePage.css'
@@ -27,6 +31,13 @@ export function DoctorWorkspacePage() {
   const [error, setError] = useState(null)
   const [stats, setStats] = useState(null)
   const [memberships, setMemberships] = useState(null)
+  const [statusFilter, setStatusFilter] = useState('all')
+
+  const filteredStats = useMemo(() => {
+    if (!stats?.referrals) return stats
+    const rows = filterReferralsByStatus(stats.referrals, statusFilter)
+    return buildStatsFromReferrals(rows)
+  }, [stats, statusFilter])
 
   useEffect(() => {
     let cancelled = false
@@ -112,14 +123,49 @@ export function DoctorWorkspacePage() {
               <p>{error}</p>
             </div>
           )}
+          {!loading && !error && (panel === 'summary' || panel === 'referrals') && (
+            <ReferralStatusFilter value={statusFilter} onChange={setStatusFilter} />
+          )}
           {!loading && !error && panel === 'summary' && (
-            <SummaryPanel stats={stats} formatDate={formatDate} />
+            <SummaryPanel stats={filteredStats} formatDate={formatDate} />
           )}
           {!loading && !error && panel === 'referrals' && (
-            <ReferralsTablePanel stats={stats} formatDate={formatDate} />
+            <ReferralsTablePanel stats={filteredStats} formatDate={formatDate} />
           )}
           {!loading && !error && panel === 'about' && <AboutPanel />}
         </div>
+      </div>
+    </div>
+  )
+}
+
+function formatReferralStage(code) {
+  if (code === 'referral_received') return 'Referral received'
+  if (code === 'referral_booked') return 'Referral booked'
+  return null
+}
+
+function ReferralStatusFilter({ value, onChange }) {
+  return (
+    <div className="refhub-toolbar">
+      <label htmlFor="refhub-status-filter" className="refhub-toolbar__label">
+        View referrals
+      </label>
+      <div className="refhub-toolbar__select-wrap">
+        <select
+          id="refhub-status-filter"
+          className="refhub-toolbar__select"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label="Filter referrals by stage"
+        >
+          <option value="all">All</option>
+          <option value="referral_received">Referral received</option>
+          <option value="referral_booked">Referral booked</option>
+        </select>
+        <span className="refhub-toolbar__chevron" aria-hidden>
+          ▾
+        </span>
       </div>
     </div>
   )
@@ -242,6 +288,9 @@ function SummaryPanel({ stats, formatDate }) {
                   <span className="doctor-workspace-settled-name">Referral #{r.id}</span>
                   <span className="doctor-workspace-settled-amt">{formatInr(r.referral_amount)}</span>
                 </div>
+                {formatReferralStage(r.referral_status) && (
+                  <p className="doctor-workspace-settled-stage">{formatReferralStage(r.referral_status)}</p>
+                )}
                 <div className="doctor-workspace-settled-meta">
                   <span>Referred {formatDate(r.referral_date)}</span>
                   {r.settlement_date && (
@@ -272,8 +321,9 @@ function ReferralsTablePanel({ stats, formatDate }) {
               <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Facility</th>
+                <th scope="col">Referral stage</th>
                 <th scope="col">Amount</th>
-                <th scope="col">Status</th>
+                <th scope="col">Settlement</th>
                 <th scope="col">Settled on</th>
                 <th scope="col">Ref</th>
               </tr>
@@ -285,8 +335,17 @@ function ReferralsTablePanel({ stats, formatDate }) {
                   <td data-label="Facility" className="doctor-workspace-cell-mono">
                     {r.facility_id ? `${String(r.facility_id).slice(0, 8)}…` : '—'}
                   </td>
+                  <td data-label="Referral stage">
+                    {formatReferralStage(r.referral_status) ? (
+                      <span className="doctor-workspace-badge doctor-workspace-badge--stage">
+                        {formatReferralStage(r.referral_status)}
+                      </span>
+                    ) : (
+                      <span className="muted">—</span>
+                    )}
+                  </td>
                   <td data-label="Amount">{formatInr(r.referral_amount)}</td>
-                  <td data-label="Status">
+                  <td data-label="Settlement">
                     <span
                       className={`doctor-workspace-badge ${r.is_settled ? 'is-settled' : 'is-pending'}`}
                     >
@@ -318,6 +377,10 @@ function AboutPanel() {
         <li>
           <strong>Pending</strong> means the incentive has not been paid or finalized yet.{' '}
           <strong>Settled</strong> means it has been processed and recorded in your ledger.
+        </li>
+        <li>
+          Use <strong>View referrals</strong> to show everything, only <strong>Referral received</strong>, or
+          only <strong>Referral booked</strong>. Summary totals match whatever you select.
         </li>
         <li>
           Totals on the summary screen are based on rows in your ledger. For questions about a specific

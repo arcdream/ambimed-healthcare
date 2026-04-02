@@ -2,6 +2,9 @@ import { supabase } from '../lib/supabase'
 import { doctorService } from './doctorService'
 import { organizationService } from './organizationService'
 
+/** Matches `public.referral_status` enum (`referral_received`, `referral_booked`). */
+export type ReferralStatusCode = 'referral_received' | 'referral_booked'
+
 export type ReferralRow = {
   id: number
   created_at: string
@@ -11,6 +14,7 @@ export type ReferralRow = {
   referral_date: string
   is_settled: boolean
   settlement_date: string | null
+  referral_status: ReferralStatusCode | null
 }
 
 export type DoctorReferralStats = {
@@ -28,7 +32,22 @@ export type ReferralHubRoles = {
 }
 
 const SELECT_COLUMNS =
-  'id, created_at, doctor_id, facility_id, referral_amount, referral_date, is_settled, settlement_date'
+  'id, created_at, doctor_id, facility_id, referral_amount, referral_date, is_settled, settlement_date, referral_status'
+
+/** Hub filter: all rows, or only rows matching `referrals.referral_status`. */
+export type ReferralStatusFilter = 'all' | ReferralStatusCode
+
+export function filterReferralsByStatus(
+  rows: ReferralRow[],
+  filter: ReferralStatusFilter,
+): ReferralRow[] {
+  if (filter === 'all') return rows
+  return rows.filter((r) => r.referral_status === filter)
+}
+
+export function buildStatsFromReferrals(rows: ReferralRow[]): DoctorReferralStats {
+  return aggregateStats(rows)
+}
 
 /** referrals.doctor_id is uuid — never pass serial ints (e.g. "1") from public.doctors.id */
 function isUuidLike(value: string): boolean {
