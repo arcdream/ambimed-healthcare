@@ -33,6 +33,14 @@ export function DoctorWorkspacePage() {
   const [memberships, setMemberships] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
 
+  /** Summary: payment totals only for rows with referral_status = referral_booked */
+  const summaryStats = useMemo(() => {
+    if (!stats?.referrals) return stats
+    const rows = filterReferralsByStatus(stats.referrals, 'referral_booked')
+    return buildStatsFromReferrals(rows)
+  }, [stats])
+
+  /** All referrals tab: user-controlled filter */
   const filteredStats = useMemo(() => {
     if (!stats?.referrals) return stats
     const rows = filterReferralsByStatus(stats.referrals, statusFilter)
@@ -123,11 +131,11 @@ export function DoctorWorkspacePage() {
               <p>{error}</p>
             </div>
           )}
-          {!loading && !error && (panel === 'summary' || panel === 'referrals') && (
+          {!loading && !error && panel === 'referrals' && (
             <ReferralStatusFilter value={statusFilter} onChange={setStatusFilter} />
           )}
           {!loading && !error && panel === 'summary' && (
-            <SummaryPanel stats={filteredStats} formatDate={formatDate} />
+            <SummaryPanel stats={summaryStats} formatDate={formatDate} />
           )}
           {!loading && !error && panel === 'referrals' && (
             <ReferralsTablePanel stats={filteredStats} formatDate={formatDate} />
@@ -275,8 +283,8 @@ function SummaryPanel({ stats, formatDate }) {
       <section className="doctor-workspace-card">
         <h2 className="doctor-workspace-section-title">Settled referrals</h2>
         <p className="doctor-workspace-section-lead muted">
-          Settled incentives are listed below with amount and dates. Referral party details may be added to
-          your ledger by the operations team when available.
+          Figures above count only referrals in the <strong>Referral booked</strong> stage. Settled incentives
+          are listed below with amount and dates.
         </p>
         {settledRows.length === 0 ? (
           <p className="muted">No settled referrals yet.</p>
@@ -288,9 +296,6 @@ function SummaryPanel({ stats, formatDate }) {
                   <span className="doctor-workspace-settled-name">Referral #{r.id}</span>
                   <span className="doctor-workspace-settled-amt">{formatInr(r.referral_amount)}</span>
                 </div>
-                {formatReferralStage(r.referral_status) && (
-                  <p className="doctor-workspace-settled-stage">{formatReferralStage(r.referral_status)}</p>
-                )}
                 <div className="doctor-workspace-settled-meta">
                   <span>Referred {formatDate(r.referral_date)}</span>
                   {r.settlement_date && (
@@ -379,12 +384,15 @@ function AboutPanel() {
           <strong>Settled</strong> means it has been processed and recorded in your ledger.
         </li>
         <li>
-          Use <strong>View referrals</strong> to show everything, only <strong>Referral received</strong>, or
-          only <strong>Referral booked</strong>. Summary totals match whatever you select.
+          <strong>Summary</strong> totals and settled amounts use only referrals in the{' '}
+          <strong>Referral booked</strong> stage (payment view).
         </li>
         <li>
-          Totals on the summary screen are based on rows in your ledger. For questions about a specific
-          case, contact Ambimed support.
+          On <strong>All referrals</strong>, use <strong>View referrals</strong> to filter the table by all
+          rows, <strong>Referral received</strong>, or <strong>Referral booked</strong>.
+        </li>
+        <li>
+          For questions about a specific case, contact Ambimed support.
         </li>
       </ul>
     </div>
