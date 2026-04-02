@@ -36,4 +36,24 @@ export const doctorService = {
     if (data?.id == null) return null
     return String(data.id)
   },
+
+  /**
+   * Hospital / association line for the doctor profile (Referral hub doctor view).
+   */
+  async fetchHospitalAssociationForAuthUid(authUid: string): Promise<string | null> {
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('hospital_association')
+      .eq('doctor_uid', authUid)
+      .maybeSingle()
+
+    if (error) {
+      if (error.code !== 'PGRST116') console.error('doctors hospital_association:', error)
+      return null
+    }
+    const raw = data?.hospital_association
+    if (raw == null) return null
+    const s = String(raw).trim()
+    return s.length ? s : null
+  },
 }

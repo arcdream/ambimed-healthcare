@@ -6,6 +6,7 @@ import {
   buildStatsFromReferrals,
 } from '../services/referralService'
 import { organizationService } from '../services/organizationService'
+import { doctorService } from '../services/doctorService'
 import { formatInr } from '../lib/pricingDisplay'
 import './DoctorWorkspacePage.css'
 
@@ -31,6 +32,7 @@ export function DoctorWorkspacePage() {
   const [error, setError] = useState(null)
   const [stats, setStats] = useState(null)
   const [memberships, setMemberships] = useState(null)
+  const [hospitalAssociation, setHospitalAssociation] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
 
   /** Summary: payment totals only for rows with referral_status = referral_booked */
@@ -54,9 +56,10 @@ export function DoctorWorkspacePage() {
       setLoading(true)
       setError(null)
       try {
-        const [refResult, memResult] = await Promise.allSettled([
+        const [refResult, memResult, hospResult] = await Promise.allSettled([
           referralService.fetchReferralDashboardForUser(user.id),
           organizationService.getMembershipsForDisplay(user.id),
+          doctorService.fetchHospitalAssociationForAuthUid(user.id),
         ])
         if (!cancelled) {
           if (memResult.status === 'fulfilled') {
@@ -64,6 +67,12 @@ export function DoctorWorkspacePage() {
           } else {
             console.error(memResult.reason)
             setMemberships([])
+          }
+          if (hospResult.status === 'fulfilled') {
+            setHospitalAssociation(hospResult.value)
+          } else {
+            console.error(hospResult.reason)
+            setHospitalAssociation(null)
           }
           if (refResult.status === 'fulfilled') {
             setStats(refResult.value.stats)
@@ -91,6 +100,8 @@ export function DoctorWorkspacePage() {
 
   return (
     <div className="doctor-workspace">
+      {hospitalAssociation && <DoctorHospitalBanner text={hospitalAssociation} />}
+
       {memberships && memberships.length > 0 && (
         <AffiliationBanner memberships={memberships} />
       )}
@@ -144,6 +155,45 @@ export function DoctorWorkspacePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function DoctorHospitalBanner({ text }) {
+  const items = String(text)
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  return (
+    <section className="refhub-dr" aria-labelledby="refhub-dr-heading">
+      <div className="refhub-dr__inner">
+        <span className="refhub-dr__icon" aria-hidden>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3 21h18M5 21V10l7-3 7 3v11M9 21v-4h6v4M10 9h4M12 7v4"
+              stroke="currentColor"
+              strokeWidth="1.65"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <div className="refhub-dr__copy">
+          <h2 id="refhub-dr-heading" className="refhub-dr__title">
+            Your practice &amp; association
+          </h2>
+          {items.length > 0 ? (
+            <ul className="refhub-dr__list">
+              {items.map((name, i) => (
+                <li key={`${i}-${name}`}>{name}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="refhub-dr__body">{text}</p>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
 
