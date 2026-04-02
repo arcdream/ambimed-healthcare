@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { referralService } from '../services/referralService'
+import { organizationService } from '../services/organizationService'
 import { formatInr } from '../lib/pricingDisplay'
 import './DoctorWorkspacePage.css'
 
@@ -25,6 +26,7 @@ export function DoctorWorkspacePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [stats, setStats] = useState(null)
+  const [memberships, setMemberships] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -33,10 +35,25 @@ export function DoctorWorkspacePage() {
       setLoading(true)
       setError(null)
       try {
-        const { stats, fetchError } = await referralService.fetchReferralDashboardForUser(user.id)
+        const [refResult, memResult] = await Promise.allSettled([
+          referralService.fetchReferralDashboardForUser(user.id),
+          organizationService.getMembershipsForDisplay(user.id),
+        ])
         if (!cancelled) {
-          setStats(stats)
-          setError(fetchError ?? null)
+          if (memResult.status === 'fulfilled') {
+            setMemberships(memResult.value)
+          } else {
+            console.error(memResult.reason)
+            setMemberships([])
+          }
+          if (refResult.status === 'fulfilled') {
+            setStats(refResult.value.stats)
+            setError(refResult.value.fetchError ?? null)
+          } else {
+            console.error(refResult.reason)
+            setStats(null)
+            setError('Could not load referral data. Try again later.')
+          }
         }
       } catch (e) {
         console.error(e)
@@ -55,6 +72,10 @@ export function DoctorWorkspacePage() {
 
   return (
     <div className="doctor-workspace">
+      {memberships && memberships.length > 0 && (
+        <AffiliationBanner memberships={memberships} />
+      )}
+
       <header className="doctor-workspace-header">
         <div>
           <p className="doctor-workspace-kicker">Referral hub</p>
@@ -101,6 +122,77 @@ export function DoctorWorkspacePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function formatRoleLabel(role) {
+  if (!role || !String(role).trim()) return null
+  const r = String(role).trim()
+  return r.charAt(0).toUpperCase() + r.slice(1).toLowerCase()
+}
+
+function AffiliationBanner({ memberships }) {
+  return (
+    <section className="refhub-affil" aria-labelledby="refhub-affil-heading">
+      <div className="refhub-affil__inner">
+        <div className="refhub-affil__intro">
+          <span className="refhub-affil__icon" aria-hidden>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M4 21V10.5L12 4l8 6.5V21h-5v-6H9v6H4z"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <div>
+            <h2 id="refhub-affil-heading" className="refhub-affil__title">
+              Your organization &amp; facilities
+            </h2>
+            <p className="refhub-affil__lead">
+              You are linked to the following accounts. Referral totals below may include activity for these
+              facilities.
+            </p>
+          </div>
+        </div>
+
+        <ul className="refhub-affil__grid">
+          {memberships.map((m) => (
+            <li key={m.membershipId} className="refhub-affil-card">
+              <div className="refhub-affil-card__top">
+                <span className="refhub-affil-card__badge refhub-affil-card__badge--org" aria-hidden>
+                  Org
+                </span>
+                {formatRoleLabel(m.role) && (
+                  <span className="refhub-affil-card__role">{formatRoleLabel(m.role)}</span>
+                )}
+              </div>
+              <p className="refhub-affil-card__org-name">{m.organization.name}</p>
+              <div className="refhub-affil-card__fac">
+                <span className="refhub-affil-card__fac-icon" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 3l9 5v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V8l9-5z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                {m.facility ? (
+                  <span className="refhub-affil-card__fac-text">{m.facility.name}</span>
+                ) : (
+                  <span className="refhub-affil-card__fac-text refhub-affil-card__fac-text--muted">
+                    Organization-wide (no specific facility)
+                  </span>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   )
 }
 

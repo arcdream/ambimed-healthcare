@@ -4,6 +4,187 @@
   margin: 0 auto;
 }
 
+/* —— Organization & facility banner (top of Referral hub) —— */
+.refhub-affil {
+  margin-bottom: 1.35rem;
+  border-radius: 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(0, 120, 212, 0.11) 0%,
+    rgba(255, 255, 255, 0.95) 42%,
+    rgba(29, 61, 114, 0.06) 100%
+  );
+  border: 1px solid rgba(0, 120, 212, 0.22);
+  box-shadow:
+    0 4px 24px rgba(29, 61, 114, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  overflow: hidden;
+  position: relative;
+}
+
+.refhub-affil::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(45%, 280px);
+  height: 100%;
+  background: radial-gradient(ellipse at 80% 20%, rgba(0, 120, 212, 0.12), transparent 65%);
+  pointer-events: none;
+}
+
+.refhub-affil__inner {
+  position: relative;
+  z-index: 1;
+  padding: 1.15rem 1.15rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .refhub-affil__inner {
+    padding: 1.35rem 1.5rem 1.45rem;
+  }
+}
+
+.refhub-affil__intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.refhub-affil__icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff, rgba(0, 120, 212, 0.12));
+  color: var(--color-bright, #0078d4);
+  border: 1px solid rgba(0, 120, 212, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 120, 212, 0.12);
+}
+
+.refhub-affil__title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-weight: 800;
+  color: var(--color-deep, #1d3d72);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.refhub-affil__lead {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(29, 61, 114, 0.72);
+  max-width: 36rem;
+}
+
+.refhub-affil__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 560px) {
+  .refhub-affil__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .refhub-affil__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.refhub-affil-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(29, 61, 114, 0.1);
+  box-shadow: 0 2px 12px rgba(29, 61, 114, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.refhub-affil-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 120, 212, 0.28);
+  box-shadow: 0 8px 22px rgba(0, 120, 212, 0.12);
+}
+
+.refhub-affil-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.refhub-affil-card__badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+}
+
+.refhub-affil-card__badge--org {
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.18), rgba(0, 120, 212, 0.06));
+  color: var(--color-deep, #1d3d72);
+  border: 1px solid rgba(0, 120, 212, 0.25);
+}
+
+.refhub-affil-card__role {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(29, 61, 114, 0.55);
+  text-transform: capitalize;
+}
+
+.refhub-affil-card__org-name {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-deep, #1d3d72);
+  line-height: 1.3;
+}
+
+.refhub-affil-card__fac {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed rgba(29, 61, 114, 0.12);
+}
+
+.refhub-affil-card__fac-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: rgba(0, 120, 212, 0.85);
+}
+
+.refhub-affil-card__fac-text {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: rgba(29, 61, 114, 0.88);
+  line-height: 1.4;
+}
+
+.refhub-affil-card__fac-text--muted {
+  font-weight: 500;
+  font-style: italic;
+  color: rgba(29, 61, 114, 0.55);
+}
+
 .doctor-workspace-header {
   margin-bottom: 1.25rem;
 }
