@@ -12,6 +12,8 @@ export type ReferralRow = {
   facility_id: string | null
   /** From `facilities.facility_name` when resolved (UI). */
   facility_name: string | null
+  client_name: string | null
+  client_phone_number: string | null
   referral_amount: number
   referral_date: string
   is_settled: boolean
@@ -34,7 +36,7 @@ export type ReferralHubRoles = {
 }
 
 const SELECT_COLUMNS =
-  'id, created_at, doctor_id, facility_id, referral_amount, referral_date, is_settled, settlement_date, referral_status'
+  'id, created_at, doctor_id, facility_id, client_name, client_phone_number, referral_amount, referral_date, is_settled, settlement_date, referral_status'
 
 /** Hub filter: all rows, or only rows matching `referrals.referral_status`. */
 export type ReferralStatusFilter = 'all' | ReferralStatusCode
@@ -169,6 +171,8 @@ export const referralService = {
           ...((data ?? []) as Omit<ReferralRow, 'facility_name'>[]).map((r) => ({
             ...r,
             facility_name: null as string | null,
+            client_name: r.client_name ?? null,
+            client_phone_number: r.client_phone_number ?? null,
           })),
         )
       }
@@ -192,6 +196,8 @@ export const referralService = {
             ...((data ?? []) as Omit<ReferralRow, 'facility_name'>[]).map((r) => ({
               ...r,
               facility_name: null as string | null,
+              client_name: r.client_name ?? null,
+              client_phone_number: r.client_phone_number ?? null,
             })),
           )
         }

@@ -530,6 +530,16 @@
   color: rgba(29, 61, 114, 0.85);
 }
 
+.doctor-workspace-phone-link {
+  color: var(--color-bright, #0078d4);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.doctor-workspace-phone-link:hover {
+  text-decoration: underline;
+}
+
 .doctor-workspace-badge {
   display: inline-flex;
   align-items: center;

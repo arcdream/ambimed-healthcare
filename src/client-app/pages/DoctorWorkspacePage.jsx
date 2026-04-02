@@ -325,6 +325,8 @@ function ReferralsTablePanel({ stats, formatDate }) {
             <thead>
               <tr>
                 <th scope="col">Date</th>
+                <th scope="col">Client name</th>
+                <th scope="col">Client phone</th>
                 <th scope="col">Facility</th>
                 <th scope="col">Referral stage</th>
                 <th scope="col">Amount</th>
@@ -337,6 +339,19 @@ function ReferralsTablePanel({ stats, formatDate }) {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td data-label="Date">{formatDate(r.referral_date)}</td>
+                  <td data-label="Client name">{r.client_name?.trim() || '—'}</td>
+                  <td data-label="Client phone">
+                    {r.client_phone_number?.trim() ? (
+                      <a
+                        href={`tel:${String(r.client_phone_number).trim().replace(/\s/g, '')}`}
+                        className="doctor-workspace-phone-link"
+                      >
+                        {r.client_phone_number.trim()}
+                      </a>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
                   <td data-label="Facility">
                     {r.facility_name?.trim() ? r.facility_name : '—'}
                   </td>
