@@ -32,7 +32,7 @@ const appNavLinks = [
 export function Header() {
   const location = useLocation()
   const isApp = location.pathname.startsWith('/app')
-  const { user, isAuthenticated, referralHubAccess, isLoading, logout } = useAuth()
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -74,12 +74,12 @@ export function Header() {
 
   const appNavLinksResolved = useMemo(() => {
     const links = [...appNavLinks]
-    if (referralHubAccess) {
+    if (isAuthenticated) {
       const idx = links.findIndex((l) => l.to === '/app/history')
-      if (idx >= 0) links.splice(idx + 1, 0, { to: '/app/doctor', label: 'Referral hub' })
+      if (idx >= 0) links.splice(idx + 1, 0, { to: '/app/referral', label: 'Referral hub' })
     }
     return links
-  }, [referralHubAccess])
+  }, [isAuthenticated])
 
   const displayName = user?.firstName?.trim() || (user?.mobileNumber ? `…${String(user.mobileNumber).slice(-4)}` : 'there')
   const avatarLetter = (
@@ -124,11 +124,9 @@ export function Header() {
                 <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
                   My bookings
                 </Link>
-                {referralHubAccess && (
-                  <Link to="/app/doctor" onClick={() => setUserMenuOpen(false)}>
-                    Referral hub
-                  </Link>
-                )}
+                <Link to="/app/referral" onClick={() => setUserMenuOpen(false)}>
+                  Referral hub
+                </Link>
                 <button
                   type="button"
                   className="header-user-signout"
@@ -240,11 +238,9 @@ export function Header() {
                 <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>
                   My bookings
                 </Link>
-                {referralHubAccess && (
-                  <Link to="/app/doctor" className="nav-link" onClick={() => setOpen(false)}>
-                    Referral hub
-                  </Link>
-                )}
+                <Link to="/app/referral" className="nav-link" onClick={() => setOpen(false)}>
+                  Referral hub
+                </Link>
                 <button
                   type="button"
                   className="nav-link nav-link--signout"

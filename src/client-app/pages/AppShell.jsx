@@ -7,7 +7,7 @@ import '../ClientApp.css'
  */
 export function AppShell() {
   const location = useLocation()
-  const wideMain = location.pathname.startsWith('/app/doctor')
+  const wideMain = location.pathname.startsWith('/app/referral')
 
   return (
     <div className="client-app-shell">

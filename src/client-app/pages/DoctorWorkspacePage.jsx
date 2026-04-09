@@ -98,6 +98,10 @@ export function DoctorWorkspacePage() {
   const displayName =
     [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'there'
 
+  const hasDoctorOrOrgContext =
+    Boolean(hospitalAssociation?.trim()) ||
+    (Array.isArray(memberships) && memberships.length > 0)
+
   return (
     <div className="doctor-workspace">
       {hospitalAssociation && <DoctorHospitalBanner text={hospitalAssociation} />}
@@ -111,8 +115,11 @@ export function DoctorWorkspacePage() {
           <p className="doctor-workspace-kicker">Referral hub</p>
           <h1 className="doctor-workspace-title">Welcome, {displayName}</h1>
           <p className="doctor-workspace-sub">
-            Track referral incentives tied to you as a referring doctor and/or to facilities linked to your
-            organization.
+            {loading
+              ? 'Loading your referral hub…'
+              : hasDoctorOrOrgContext
+                ? 'Track referral incentives tied to you as a referring doctor and/or to facilities linked to your organization.'
+                : 'Your referrals and rewards in one place. Book care and manage your bookings from the header anytime.'}
           </p>
         </div>
       </header>

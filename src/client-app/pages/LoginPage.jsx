@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { authService } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
@@ -6,12 +6,16 @@ import { supabaseConfigured } from '../lib/supabase'
 import { TERMS_PDF_URL } from '../../data/legal'
 import { clearPendingBookingDraft, getPendingBookingDraft } from '../lib/pendingBooking'
 
+const OTP_LEN = 6
+
 export function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [phone, setPhone] = useState('')
-  const [otp, setOtp] = useState('')
+  const [otpDigits, setOtpDigits] = useState(() => Array(OTP_LEN).fill(''))
+  const otpInputRefs = useRef([])
+  const otp = otpDigits.join('')
   const [step, setStep] = useState('phone')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState('')
@@ -71,6 +75,10 @@ export function LoginPage() {
   const verify = async (e) => {
     e.preventDefault()
     setError('')
+    if (!/^\d{6}$/.test(otp)) {
+      setError('Enter the 6-digit code.')
+      return
+    }
     setLoading(true)
     try {
       const r = await login(phone, otp)
@@ -88,6 +96,73 @@ export function LoginPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    if (step === 'otp') {
+      setOtpDigits(Array(OTP_LEN).fill(''))
+      const t = requestAnimationFrame(() => otpInputRefs.current[0]?.focus())
+      return () => cancelAnimationFrame(t)
+    }
+  }, [step])
+
+  const handleOtpChange = (i, e) => {
+    const raw = e.target.value.replace(/\D/g, '')
+    if (raw.length === 0) {
+      setOtpDigits((prev) => {
+        const next = [...prev]
+        next[i] = ''
+        return next
+      })
+      return
+    }
+    if (raw.length === 1) {
+      setOtpDigits((prev) => {
+        const next = [...prev]
+        next[i] = raw
+        return next
+      })
+      if (i < OTP_LEN - 1) otpInputRefs.current[i + 1]?.focus()
+      return
+    }
+    const chars = raw.slice(0, OTP_LEN).split('')
+    setOtpDigits((prev) => {
+      const next = [...prev]
+      chars.forEach((c, j) => {
+        if (i + j < OTP_LEN) next[i + j] = c
+      })
+      return next
+    })
+    const nextFocus = Math.min(i + chars.length, OTP_LEN - 1)
+    otpInputRefs.current[nextFocus]?.focus()
+  }
+
+  const handleOtpKeyDown = (i, e) => {
+    if (e.key === 'Backspace' && !otpDigits[i] && i > 0) {
+      e.preventDefault()
+      setOtpDigits((prev) => {
+        const next = [...prev]
+        next[i - 1] = ''
+        return next
+      })
+      otpInputRefs.current[i - 1]?.focus()
+    }
+  }
+
+  const handleOtpPaste = (i, e) => {
+    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LEN)
+    if (!text) return
+    e.preventDefault()
+    const chars = text.split('')
+    setOtpDigits((prev) => {
+      const next = [...prev]
+      chars.forEach((c, j) => {
+        if (i + j < OTP_LEN) next[i + j] = c
+      })
+      return next
+    })
+    const nextFocus = Math.min(i + chars.length, OTP_LEN - 1)
+    otpInputRefs.current[nextFocus]?.focus()
   }
 
   return (
@@ -114,19 +189,24 @@ export function LoginPage() {
           <form onSubmit={sendOtp}>
             {error && <div className="error">{error}</div>}
             <label htmlFor="phone">Mobile number</label>
-            <input
-              id="phone"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="tel-national"
-              placeholder="10-digit number"
-              value={phone}
-              onChange={onPhoneChange}
-              maxLength={10}
-              pattern="[0-9]{10}"
-              title="10-digit mobile number"
-              required
-            />
+            <div className="login-phone-row">
+              <span className="login-phone-prefix" aria-hidden="true">
+                +91
+              </span>
+              <input
+                id="phone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                placeholder="10-digit number"
+                value={phone}
+                onChange={onPhoneChange}
+                maxLength={10}
+                pattern="[0-9]{10}"
+                title="10-digit mobile number"
+                required
+              />
+            </div>
             <div className="login-terms">
               <input
                 id="accept-terms"
@@ -155,16 +235,27 @@ export function LoginPage() {
         ) : (
           <form onSubmit={verify}>
             {error && <div className="error">{error}</div>}
-            <label htmlFor="otp">Enter the code we sent</label>
-            <input
-              id="otp"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              placeholder="••••••"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
+            <label id="otp-label">Enter the code we sent</label>
+            <div className="login-otp-row" role="group" aria-labelledby="otp-label">
+              {Array.from({ length: OTP_LEN }, (_, i) => (
+                <input
+                  key={i}
+                  ref={(el) => {
+                    otpInputRefs.current[i] = el
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete={i === 0 ? 'one-time-code' : 'off'}
+                  className="login-otp-box"
+                  maxLength={i === 0 ? 6 : 1}
+                  value={otpDigits[i]}
+                  onChange={(e) => handleOtpChange(i, e)}
+                  onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                  onPaste={(e) => handleOtpPaste(i, e)}
+                  aria-label={`Digit ${i + 1} of ${OTP_LEN}`}
+                />
+              ))}
+            </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <button type="submit" className="btn btn-primary" style={{ flex: '1 1 140px' }} disabled={loading}>
                 {loading ? 'Verifying…' : 'Verify & continue'}
@@ -175,7 +266,7 @@ export function LoginPage() {
                 style={{ flex: '1 1 120px' }}
                 onClick={() => {
                   setStep('phone')
-                  setOtp('')
+                  setOtpDigits(Array(OTP_LEN).fill(''))
                 }}
               >
                 Change number

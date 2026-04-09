@@ -6,7 +6,7 @@ export interface User {
   firstName?: string
   lastName?: string
   email?: string
-  /** Doctor or corporate user — can open the referral hub (`/app/doctor`). */
+  /** True when user is a referring doctor or linked to an org (informational). Referral hub is at `/app/referral` for all logged-in clients. */
   referralHubAccess?: boolean
   /** Referrals where `referrals.doctor_id` matches this user (via doctors / auth uid). */
   isDoctor?: boolean
@@ -104,7 +104,7 @@ export interface Booking {
 export interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
-  /** True when the user may open the referral hub (doctor or corporate). */
+  /** True when user is a doctor or in an organization (informational). Any logged-in user can open `/app/referral`. */
   referralHubAccess: boolean
   isLoading: boolean
   login: (mobileNumber: string, otp: string) => Promise<{ success: boolean; message?: string }>
