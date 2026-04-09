@@ -118,15 +118,20 @@ export function Header() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.15 }}
               >
-                <Link to="/app/booking" onClick={() => setUserMenuOpen(false)}>
-                  Book care
-                </Link>
-                <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
-                  My bookings
-                </Link>
-                <Link to="/app/referral" onClick={() => setUserMenuOpen(false)}>
-                  Referral hub
-                </Link>
+                {/* On /app/* these routes are already in the main nav — avoid duplicates. */}
+                {!isApp && (
+                  <>
+                    <Link to="/app/booking" onClick={() => setUserMenuOpen(false)}>
+                      Book care
+                    </Link>
+                    <Link to="/app/history" onClick={() => setUserMenuOpen(false)}>
+                      My bookings
+                    </Link>
+                    <Link to="/app/referral" onClick={() => setUserMenuOpen(false)}>
+                      Referral hub
+                    </Link>
+                  </>
+                )}
                 <button
                   type="button"
                   className="header-user-signout"
@@ -232,15 +237,20 @@ export function Header() {
             )}
             {!isLoading && isAuthenticated && (
               <>
-                <Link to="/app/booking" className="nav-link" onClick={() => setOpen(false)}>
-                  Book care (dashboard)
-                </Link>
-                <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>
-                  My bookings
-                </Link>
-                <Link to="/app/referral" className="nav-link" onClick={() => setOpen(false)}>
-                  Referral hub
-                </Link>
+                {/* Marketing site: app links aren’t in the list above. On /app/* they’re already in appNavLinksResolved. */}
+                {!isApp && (
+                  <>
+                    <Link to="/app/booking" className="nav-link" onClick={() => setOpen(false)}>
+                      Book care
+                    </Link>
+                    <Link to="/app/history" className="nav-link" onClick={() => setOpen(false)}>
+                      My bookings
+                    </Link>
+                    <Link to="/app/referral" className="nav-link" onClick={() => setOpen(false)}>
+                      Referral hub
+                    </Link>
+                  </>
+                )}
                 <button
                   type="button"
                   className="nav-link nav-link--signout"
