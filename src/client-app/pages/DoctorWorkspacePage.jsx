@@ -1,19 +1,29 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useAuth } from '../context/AuthContext'
 import {
   referralService,
   filterReferralsByStatus,
   buildStatsFromReferrals,
+  REFERRAL_SUBMIT_AMOUNT,
 } from '../services/referralService'
 import { organizationService } from '../services/organizationService'
 import { doctorService } from '../services/doctorService'
 import { formatInr } from '../lib/pricingDisplay'
 import './DoctorWorkspacePage.css'
 
-const PANELS = [
-  { id: 'summary', label: 'Summary' },
-  { id: 'referrals', label: 'All referrals' },
-  { id: 'about', label: 'How it works' },
+const PANEL_IDS = {
+  summary: 'summary',
+  refer: 'refer',
+  referrals: 'referrals',
+  about: 'about',
+}
+
+/** Always listed so every signed-in user can open the form; submit is validated server-side. */
+const NAV_PANELS = [
+  { id: PANEL_IDS.summary, label: 'Summary' },
+  { id: PANEL_IDS.refer, label: 'Refer someone' },
+  { id: PANEL_IDS.referrals, label: 'All referrals' },
+  { id: PANEL_IDS.about, label: 'How it works' },
 ]
 
 function formatDate(d) {
@@ -34,6 +44,12 @@ export function DoctorWorkspacePage() {
   const [memberships, setMemberships] = useState(null)
   const [hospitalAssociation, setHospitalAssociation] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
+  const loadReferralDashboard = useCallback(async () => {
+    if (!user?.id) return
+    const refResult = await referralService.fetchReferralDashboardForUser(user.id)
+    setStats(refResult.stats)
+    setError(refResult.fetchError ?? null)
+  }, [user?.id])
 
   /** Summary: payment totals only for rows with referral_status = referral_booked */
   const summaryStats = useMemo(() => {
@@ -126,7 +142,7 @@ export function DoctorWorkspacePage() {
 
       <div className="doctor-workspace-body">
         <nav className="doctor-workspace-nav" aria-label="Referral hub sections">
-          {PANELS.map((p) => (
+          {NAV_PANELS.map((p) => (
             <button
               key={p.id}
               type="button"
@@ -149,16 +165,19 @@ export function DoctorWorkspacePage() {
               <p>{error}</p>
             </div>
           )}
-          {!loading && !error && panel === 'referrals' && (
+          {!loading && !error && panel === PANEL_IDS.referrals && (
             <ReferralStatusFilter value={statusFilter} onChange={setStatusFilter} />
           )}
-          {!loading && !error && panel === 'summary' && (
+          {!loading && !error && panel === PANEL_IDS.summary && (
             <SummaryPanel stats={summaryStats} formatDate={formatDate} />
           )}
-          {!loading && !error && panel === 'referrals' && (
+          {!loading && !error && panel === PANEL_IDS.refer && user?.id && (
+            <ReferSomeonePanel onCreated={loadReferralDashboard} />
+          )}
+          {!loading && !error && panel === PANEL_IDS.referrals && (
             <ReferralsTablePanel stats={filteredStats} formatDate={formatDate} />
           )}
-          {!loading && !error && panel === 'about' && <AboutPanel />}
+          {!loading && !error && panel === PANEL_IDS.about && <AboutPanel />}
         </div>
       </div>
     </div>
@@ -437,6 +456,107 @@ function ReferralsTablePanel({ stats, formatDate }) {
           </table>
         </div>
       )}
+    </div>
+  )
+}
+
+function ReferSomeonePanel({ onCreated }) {
+  const [fullName, setFullName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [formError, setFormError] = useState('')
+  const [showSaved, setShowSaved] = useState(false)
+  const [savedRefId, setSavedRefId] = useState(null)
+
+  const onPhoneChange = (e) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+    setPhone(digits)
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    setFormError('')
+    setShowSaved(false)
+    setSavedRefId(null)
+    setSubmitting(true)
+    try {
+      const r = await referralService.createReferralFromDoctor({
+        clientName: fullName,
+        clientPhoneDigits: phone,
+      })
+      if (r.success) {
+        setFullName('')
+        setPhone('')
+        setShowSaved(true)
+        setSavedRefId(typeof r.id === 'number' ? r.id : null)
+        await onCreated()
+      } else {
+        setFormError(r.message || 'Something went wrong.')
+      }
+    } catch (err) {
+      console.error(err)
+      setFormError('Something went wrong.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="doctor-workspace-card refhub-refer-card">
+      <h2 className="doctor-workspace-section-title">Refer someone</h2>
+      <p className="doctor-workspace-section-lead muted">
+        Add a client you are referring. This records a referral incentive of{' '}
+        <strong>{formatInr(REFERRAL_SUBMIT_AMOUNT)}</strong> as <strong>Referral received</strong>.
+      </p>
+      {showSaved && (
+        <p className="refhub-refer-success" role="status">
+          Referral saved
+          {savedRefId != null ? ` (#${savedRefId})` : ''}. You can review it under <strong>All referrals</strong>.
+        </p>
+      )}
+      {formError && <div className="client-app error">{formError}</div>}
+      <form className="refhub-refer-form" onSubmit={onSubmit}>
+        <label htmlFor="refhub-client-name">Full name</label>
+        <input
+          id="refhub-client-name"
+          type="text"
+          name="clientName"
+          autoComplete="name"
+          placeholder="Client’s full name"
+          value={fullName}
+          onChange={(e) => {
+            setFullName(e.target.value)
+            setFormError('')
+          }}
+          maxLength={200}
+          required
+        />
+        <label htmlFor="refhub-client-phone">Mobile number</label>
+        <div className="login-phone-row">
+          <span className="login-phone-prefix" aria-hidden="true">
+            +91
+          </span>
+          <input
+            id="refhub-client-phone"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel-national"
+            placeholder="10-digit number"
+            value={phone}
+            onChange={(e) => {
+              onPhoneChange(e)
+              setFormError('')
+            }}
+            maxLength={10}
+            pattern="[0-9]{10}"
+            title="10-digit mobile number"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary refhub-refer-submit" disabled={submitting}>
+          {submitting ? 'Submitting…' : 'Submit referral'}
+        </button>
+      </form>
     </div>
   )
 }
