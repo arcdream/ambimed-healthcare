@@ -2,9 +2,26 @@ import { User } from '../types/models'
 import { sessionManager } from './sessionManager'
 import { supabase } from '../lib/supabase'
 import { profileService } from './profileService'
+import { doctorService } from './doctorService'
+import { organizationService } from './organizationService'
 
 const NOT_CLIENT_MESSAGE =
-  "This phone number is already registered as a Caregiver on the Ambimed Caregiver app and cannot be used on the Ambimed app.\n\nFor assistance, please contact customer care at +91 8726568502.";
+  "This phone number is already registered as a Caregiver on the Ambimed Caregiver app and cannot be used on the Ambimed app.\n\nFor assistance, please contact customer care at +91 8726568502."
+
+const NOT_REGISTERED_MESSAGE =
+  'No Ambimed account was found for this number. Please contact customer care if you need help.'
+
+function canUseClientApp(
+  profile: Awaited<ReturnType<typeof profileService.fetchProfile>>,
+  isDoctorUid: boolean,
+  isCorporateUser: boolean,
+): boolean {
+  if (profile?.role === 'worker') return false
+  if (profile?.role === 'client' || profile?.role === 'doctor') return true
+  if (isDoctorUid) return true
+  if (isCorporateUser) return true
+  return false
+}
 
 // Helper function to normalize phone number to E.164 format
 function normalizePhoneNumber(phoneNumber: string): string {
@@ -100,23 +117,37 @@ export const authService = {
         };
       }
 
-      // Ensure user has a client profile (ambimed is for clients only)
-      const profile = await profileService.fetchProfile(data.user.id);
-      if (!profile || profile.role !== "client") {
-        await supabase.auth.signOut();
+      const profile = await profileService.fetchProfile(data.user.id)
+      const [isDoctorUid, isCorporateUser] = await Promise.all([
+        doctorService.isDoctorUid(data.user.id),
+        organizationService.isCorporateUser(data.user.id),
+      ])
+
+      if (profile?.role === 'worker') {
+        await supabase.auth.signOut()
         return {
           success: false,
           message: NOT_CLIENT_MESSAGE,
-        };
+        }
       }
 
-      // Map Supabase user to our User model
+      if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
+        await supabase.auth.signOut()
+        return {
+          success: false,
+          message: profile?.role === 'worker' ? NOT_CLIENT_MESSAGE : NOT_REGISTERED_MESSAGE,
+        }
+      }
+
       const user: User = {
         id: data.user.id,
         mobileNumber: data.user.phone || normalizedPhone,
-        firstName: data.user.user_metadata?.firstName || '',
-        lastName: data.user.user_metadata?.lastName || '',
-        email: data.user.email,
+        firstName: profile?.first_name?.trim() || data.user.user_metadata?.firstName || '',
+        lastName: profile?.last_name?.trim() || data.user.user_metadata?.lastName || '',
+        email: profile?.email ?? data.user.email,
+        referralHubAccess: isDoctorUid || isCorporateUser,
+        isDoctor: isDoctorUid,
+        isCorporateUser,
       }
 
       // Save session
@@ -144,16 +175,23 @@ export const authService = {
     } = await supabase.auth.getSession()
     if (sbSession?.user) {
       const profile = await profileService.fetchProfile(sbSession.user.id)
-      if (!profile || profile.role !== 'client') {
+      const [isDoctorUid, isCorporateUser] = await Promise.all([
+        doctorService.isDoctorUid(sbSession.user.id),
+        organizationService.isCorporateUser(sbSession.user.id),
+      ])
+      if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
         await this.logout()
         return null
       }
       const user: User = {
         id: sbSession.user.id,
         mobileNumber: sbSession.user.phone || sbSession.user.email || '',
-        firstName: sbSession.user.user_metadata?.firstName || '',
-        lastName: sbSession.user.user_metadata?.lastName || '',
-        email: sbSession.user.email,
+        firstName: profile?.first_name?.trim() || sbSession.user.user_metadata?.firstName || '',
+        lastName: profile?.last_name?.trim() || sbSession.user.user_metadata?.lastName || '',
+        email: profile?.email ?? sbSession.user.email,
+        referralHubAccess: isDoctorUid || isCorporateUser,
+        isDoctor: isDoctorUid,
+        isCorporateUser,
       }
       await sessionManager.saveSession(user)
       return user
@@ -163,12 +201,26 @@ export const authService = {
     if (!session?.user) return null
 
     const profile = await profileService.fetchProfile(session.user.id)
-    if (!profile || profile.role !== 'client') {
+    const [isDoctorUid, isCorporateUser] = await Promise.all([
+      doctorService.isDoctorUid(session.user.id),
+      organizationService.isCorporateUser(session.user.id),
+    ])
+    if (!canUseClientApp(profile, isDoctorUid, isCorporateUser)) {
       await this.logout()
       return null
     }
 
-    return session.user
+    const user: User = {
+      ...session.user,
+      firstName: profile?.first_name?.trim() || session.user.firstName,
+      lastName: profile?.last_name?.trim() || session.user.lastName,
+      email: profile?.email ?? session.user.email,
+      referralHubAccess: isDoctorUid || isCorporateUser,
+      isDoctor: isDoctorUid,
+      isCorporateUser,
+    }
+    await sessionManager.saveSession(user)
+    return user
   },
 
   async logout(): Promise<void> {

@@ -6,6 +6,12 @@ export interface User {
   firstName?: string
   lastName?: string
   email?: string
+  /** Doctor or corporate user — can open the referral hub (`/app/doctor`). */
+  referralHubAccess?: boolean
+  /** Referrals where `referrals.doctor_id` matches this user (via doctors / auth uid). */
+  isDoctor?: boolean
+  /** Referrals for `referrals.facility_id` from `user_organizations`. */
+  isCorporateUser?: boolean
 }
 
 export interface Address {
@@ -98,6 +104,8 @@ export interface Booking {
 export interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  /** True when the user may open the referral hub (doctor or corporate). */
+  referralHubAccess: boolean
   isLoading: boolean
   login: (mobileNumber: string, otp: string) => Promise<{ success: boolean; message?: string }>
   logout: () => Promise<void>
