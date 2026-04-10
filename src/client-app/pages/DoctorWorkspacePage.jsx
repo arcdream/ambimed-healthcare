@@ -565,23 +565,34 @@ function AboutPanel() {
   return (
     <div className="doctor-workspace-card">
       <h2 className="doctor-workspace-section-title">How your referral hub works</h2>
+      <p className="doctor-workspace-about-lead muted">
+        Follow the steps below to refer a patient and understand how incentives are paid. You can track each
+        referral under <strong>Summary</strong> and <strong>All referrals</strong>.
+      </p>
+      <ol className="doctor-workspace-about-steps">
+        <li>
+          <strong>Sign in</strong> to the Ambimed portal with your registered account.
+        </li>
+        <li>
+          Open the <strong>Referral hub</strong>, go to the <strong>Refer someone</strong> tab, and enter the
+          patient’s details to submit a referral.
+        </li>
+        <li>
+          <strong>Duplicate referrals are not accepted.</strong> If the same patient was already referred within
+          the <strong>last three months</strong>—whether by you or by another referrer—the referral will be declined.
+        </li>
+        <li>
+          <strong>Payment is released after service.</strong> Once the patient completes an eligible Ambimed
+          service, the referral incentive is processed and transferred according to our program rules.
+        </li>
+      </ol>
+      <h3 className="doctor-workspace-about-subhead">Tracking and payments</h3>
       <ul className="doctor-workspace-about-list">
         <li>
-          <strong>Doctor-linked</strong> rows match your profile as the referring doctor.{' '}
-          <strong>Corporate / facility</strong> rows appear when your account is tied to an organization
-          facility and the referral is recorded against that facility.
-        </li>
-        <li>
-          <strong>Pending</strong> means the incentive has not been paid or finalized yet.{' '}
-          <strong>Settled</strong> means it has been processed and recorded in your ledger.
-        </li>
-        <li>
-          <strong>Summary</strong> totals and settled amounts use only referrals in the{' '}
-          <strong>Referral booked</strong> stage (payment view).
-        </li>
-        <li>
-          On <strong>All referrals</strong>, use <strong>View referrals</strong> to filter the table by all
-          rows, <strong>Referral received</strong>, or <strong>Referral booked</strong>.
+          <strong>Pending</strong> means the incentive has not yet been paid or finalized.{' '}
+          <strong>Settled</strong> means it has been processed and recorded. Summary totals that reflect payment
+          use referrals in the <strong>Referral booked</strong> stage. On <strong>All referrals</strong>, use{' '}
+          <strong>View referrals</strong> to filter by stage or view every row.
         </li>
         <li>
           For questions about a specific case, contact Ambimed support.

@@ -682,6 +682,33 @@
   }
 }
 
+.doctor-workspace-about-lead {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.doctor-workspace-about-steps {
+  margin: 0 0 1.25rem;
+  padding-left: 1.35rem;
+  color: rgba(29, 61, 114, 0.88);
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
+.doctor-workspace-about-steps li + li {
+  margin-top: 0.65rem;
+}
+
+.doctor-workspace-about-subhead {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(29, 61, 114, 0.65);
+}
+
 .doctor-workspace-about-list {
   margin: 0;
   padding-left: 1.1rem;
