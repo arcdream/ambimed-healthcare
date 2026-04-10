@@ -571,7 +571,7 @@ function AboutPanel() {
       </p>
       <ol className="doctor-workspace-about-steps">
         <li>
-          <strong>Sign in</strong> to the Ambimed portal with your registered account.
+          <strong>Sign in</strong> to the Ambimed portal with your registered phone number.
         </li>
         <li>
           Open the <strong>Referral hub</strong>, go to the <strong>Refer someone</strong> tab, and enter the
