@@ -20,6 +20,22 @@ function discountedAmount(price, discountPct) {
   return Math.round((price * (100 - discountPct)) / 100)
 }
 
+/** 24-hour live-in disclaimers (shown under catalogue line for these services only). */
+const LIVE_IN_DISCLAIMERS = {
+  nurse: { title: 'Nurse', range: '₹1,318 – ₹3,000', accent: 'nurse' },
+  caregiver: { title: 'Caregiver', range: '₹1,060 – ₹2,000', accent: 'caregiver' },
+}
+
+function liveInDisclaimerKey(svc) {
+  const name = (svc.name || '').toLowerCase()
+  if (name.includes('home nurse')) return 'nurse'
+  if (name.includes('caregiver')) return 'caregiver'
+  const id = String(svc.id ?? '')
+  if (id === '1') return 'nurse'
+  if (id === '5') return 'caregiver'
+  return null
+}
+
 export function ServicesPricingSection() {
   const [services, setServices] = useState([])
   const [discountPct, setDiscountPct] = useState(null)
@@ -162,6 +178,9 @@ export function ServicesPricingSection() {
                       {subtypes.map((sub) => {
                         const orig = sub.price
                         const deal = discountedAmount(orig, discountPct ?? 0)
+                        const discKey = liveInDisclaimerKey(svc)
+                        const showLiveInNote =
+                          sub.shiftDurationHours === 24 && discKey && LIVE_IN_DISCLAIMERS[discKey]
                         return (
                           <li key={sub.id} className="services-pricing-line">
                             <div className="services-pricing-line__meta">
@@ -187,6 +206,31 @@ export function ServicesPricingSection() {
                               )}
                               <span className="services-pricing-line__unit">/ day</span>
                             </div>
+                            {showLiveInNote ? (
+                              <div
+                                className={`services-pricing-livein services-pricing-livein--${LIVE_IN_DISCLAIMERS[discKey].accent}`}
+                                role="note"
+                              >
+                                <div className="services-pricing-livein__icon" aria-hidden>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                      d="M12 16v-4M12 8h.01M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"
+                                      stroke="currentColor"
+                                      strokeWidth="1.75"
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                </div>
+                                <div className="services-pricing-livein__body">
+                                  <span className="services-pricing-livein__kicker">24-hour live-in · indicative range</span>
+                                  <p className="services-pricing-livein__role">{LIVE_IN_DISCLAIMERS[discKey].title}</p>
+                                  <p className="services-pricing-livein__range">
+                                    Pricing: <strong>{LIVE_IN_DISCLAIMERS[discKey].range}</strong>
+                                  </p>
+                                  <p className="services-pricing-livein__hint">Depends on requirements.</p>
+                                </div>
+                              </div>
+                            ) : null}
                           </li>
                         )
                       })}
