@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import './Apps.css'
 
 export function Apps() {
@@ -12,38 +11,98 @@ export function Apps() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Mobile apps
+          Mobile Apps
         </motion.p>
+
         <motion.h2
           className="section-title"
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Our apps
+          Our Apps
         </motion.h2>
+
         <motion.h3
           className="section-subheading"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.05 }}
         >
-          Client and caregiver apps (coming soon)
+          Book healthcare services or join as a caregiver partner
         </motion.h3>
+
         <motion.div
-          className="apps-coming-soon"
+          className="apps-grid"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="apps-coming-soon-text">
-            <strong>Coming soon.</strong> Our mobile apps aren’t ready yet — we’re finishing the experience for clients and
-            caregivers. You can still book care on the web anytime.
-          </p>
-          <Link to="/app/booking" className="btn btn-primary apps-book-link">
-            Book care on the web
-          </Link>
+          {/* Featured Client App */}
+          <div className="app-card featured">
+            <span className="app-badge">TO BOOK SERVICES</span>
+
+            <h4 className="app-card-title">
+              AmbiMed Healthcare
+            </h4>
+
+            <p className="app-card-desc">
+              Book nurses, attendants, caregivers, physiotherapy and home
+              healthcare services directly from your mobile phone.
+            </p>
+
+            <ul className="app-features">
+              <li>Book healthcare services instantly</li>
+              <li>Track and manage appointments</li>
+              <li>Secure booking experience</li>
+              <li>Fast support and updates</li>
+            </ul>
+
+            <a
+              href="https://play.google.com/store/apps/details?id=com.ambimed.healthcare.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="play-badge-link"
+            >
+              <img
+                src="/assets/google-play-badge.svg"
+                alt="Get it on Google Play"
+                className="google-play-badge"
+              />
+            </a>
+          </div>
+
+          {/* Caregiver App */}
+          <div className="app-card">
+            <h4 className="app-card-title">
+              AmbiMed Caregiver Partner
+            </h4>
+
+            <p className="app-card-desc">
+              Designed for nurses, attendants and caregivers who provide
+              healthcare services through the AmbiMed platform.
+            </p>
+
+            <ul className="app-features">
+              <li>Receive service requests</li>
+              <li>Manage schedules</li>
+              <li>Track assignments</li>
+              <li>Grow your professional network</li>
+            </ul>
+
+            <a
+              href="https://play.google.com/store/apps/details?id=com.ambimed.healthcare.caregiver"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="play-badge-link"
+            >
+              <img
+                src="/assets/google-play-badge.svg"
+                alt="Get it on Google Play"
+                className="google-play-badge"
+              />
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>
