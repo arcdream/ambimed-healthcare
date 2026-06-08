@@ -72,6 +72,23 @@
   opacity: 1;
 }
 
+.services-pricing-min-booking-banner {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 1rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-deep);
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.1) 0%, rgba(29, 61, 114, 0.06) 100%);
+  border: 1px solid rgba(0, 120, 212, 0.28);
+  box-shadow: 0 4px 16px rgba(29, 61, 114, 0.1);
+}
+
 @keyframes services-pricing-pill-pulse {
   0%,
   100% {

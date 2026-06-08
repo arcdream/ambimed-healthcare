@@ -79,6 +79,15 @@ export function ServicesPricingSection() {
               </span>
             </motion.div>
           )}
+          <motion.div
+            className="services-pricing-min-booking-banner"
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: showDiscount ? 0.06 : 0 }}
+          >
+            Minimum Booking 1 Month
+          </motion.div>
           <motion.p
             className="section-subtitle services-pricing-subtitle"
             initial={{ opacity: 0, y: 12 }}

@@ -100,11 +100,8 @@
 
 @media (min-width: 768px) {
   .apps-grid {
-    grid-template-columns: 1.2fr 1fr;
-  }
-
-  .app-card.featured {
-    transform: scale(1.02);
+    max-width: 520px;
+    margin: 0 auto;
   }
 }
 

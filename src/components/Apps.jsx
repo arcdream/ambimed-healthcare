@@ -30,7 +30,7 @@ export function Apps() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Book healthcare services or join as a caregiver partner
+          Book healthcare services from your phone
         </motion.h3>
 
         <motion.div
@@ -61,38 +61,6 @@ export function Apps() {
 
             <a
               href={config.clientAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="play-badge-link"
-            >
-              <img
-                src="/assets/google-play-badge.svg"
-                alt="Get it on Google Play"
-                className="google-play-badge"
-              />
-            </a>
-          </div>
-
-          {/* Caregiver App */}
-          <div className="app-card">
-            <h4 className="app-card-title">
-              AmbiMed Caregiver Partner
-            </h4>
-
-            <p className="app-card-desc">
-              Designed for nurses, attendants and caregivers who provide
-              healthcare services through the AmbiMed platform.
-            </p>
-
-            <ul className="app-features">
-              <li>Receive service requests</li>
-              <li>Manage schedules</li>
-              <li>Track assignments</li>
-              <li>Grow your professional network</li>
-            </ul>
-
-            <a
-              href={config.caregiverAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="play-badge-link"
