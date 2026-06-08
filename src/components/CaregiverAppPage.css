@@ -1,0 +1,333 @@
+.caregiver-app-page {
+  min-height: 100vh;
+  background: var(--color-white);
+  color: var(--color-deep);
+}
+
+.caregiver-app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-deep-08);
+}
+
+.caregiver-app-logo {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.caregiver-app-logo:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.caregiver-app-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.caregiver-app-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 1rem 3.5rem;
+}
+
+.caregiver-app-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(0, 120, 212, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 20%, rgba(29, 61, 114, 0.12), transparent 50%),
+    linear-gradient(160deg, rgba(0, 120, 212, 0.08) 0%, var(--color-white) 65%);
+  z-index: 0;
+}
+
+.caregiver-app-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+.caregiver-app-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--color-bright-15);
+  color: var(--color-bright);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.caregiver-app-hero-copy h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.9rem, 5vw, 2.85rem);
+  line-height: 1.15;
+  color: var(--color-deep);
+}
+
+.caregiver-app-highlight {
+  color: var(--color-bright);
+}
+
+.caregiver-app-lead {
+  margin: 0 0 1.25rem;
+  max-width: 540px;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  opacity: 0.9;
+}
+
+.caregiver-app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.caregiver-app-tags li {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-white);
+  border: 1px solid rgba(0, 120, 212, 0.22);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(29, 61, 114, 0.06);
+}
+
+.caregiver-app-play-link {
+  display: inline-flex;
+  text-decoration: none;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.caregiver-app-play-link:hover {
+  text-decoration: none;
+  transform: translateY(-3px);
+  filter: drop-shadow(0 10px 22px rgba(29, 61, 114, 0.22));
+}
+
+.caregiver-app-play-link--center {
+  justify-content: center;
+}
+
+.caregiver-app-play-badge {
+  height: 58px;
+  width: auto;
+}
+
+.caregiver-app-hero-card {
+  padding: 1.5rem 1.35rem;
+  border-radius: 18px;
+  background: var(--color-white);
+  border: 1px solid rgba(0, 120, 212, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.caregiver-app-hero-card-label {
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-bright);
+}
+
+.caregiver-app-hero-card-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: quick-step;
+}
+
+.caregiver-app-hero-card-steps li {
+  counter-increment: quick-step;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.08), rgba(29, 61, 114, 0.04));
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.caregiver-app-hero-card-steps li::before {
+  content: counter(quick-step) '. ';
+  color: var(--color-bright);
+}
+
+.caregiver-app-hero-card-note {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.caregiver-app-setup {
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+  background: linear-gradient(180deg, var(--color-white) 0%, rgba(0, 120, 212, 0.04) 100%);
+}
+
+.caregiver-app-setup-header {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 2rem;
+}
+
+.caregiver-app-setup-header h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--color-deep);
+}
+
+.caregiver-app-setup-header p {
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.88;
+}
+
+.caregiver-app-steps {
+  display: grid;
+  gap: 1rem;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.caregiver-app-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.15rem 1.25rem;
+  border-radius: 14px;
+  background: var(--color-white);
+  border: 1px solid var(--color-deep-08);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.caregiver-app-step:hover {
+  border-color: rgba(0, 120, 212, 0.28);
+  box-shadow: var(--shadow-lg);
+}
+
+.caregiver-app-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-bright), #006cbd);
+  color: var(--color-white);
+  font-weight: 800;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 120, 212, 0.35);
+}
+
+.caregiver-app-step-body h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  color: var(--color-deep);
+}
+
+.caregiver-app-step-body p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  opacity: 0.88;
+}
+
+.caregiver-app-download-cta {
+  margin-top: 2rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.1), rgba(29, 61, 114, 0.06));
+  border: 1px solid rgba(0, 120, 212, 0.2);
+}
+
+.caregiver-app-download-cta p {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-deep);
+}
+
+.caregiver-app-support {
+  padding: 2rem 1rem 3.5rem;
+}
+
+.caregiver-app-support-inner {
+  max-width: 640px;
+}
+
+.caregiver-app-support-card {
+  padding: 1.75rem 1.5rem;
+  border-radius: 16px;
+  background: var(--color-deep);
+  color: var(--color-white);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.caregiver-app-support-card h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.35rem;
+}
+
+.caregiver-app-support-card p {
+  margin: 0 0 1rem;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
+.caregiver-app-support-email {
+  display: inline-flex;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-white) !important;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: background 0.2s ease;
+}
+
+.caregiver-app-support-email:hover {
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+@media (min-width: 900px) {
+  .caregiver-app-hero-inner {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+
+  .caregiver-app-hero-card-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .caregiver-app-play-badge {
+    height: 52px;
+  }
+}

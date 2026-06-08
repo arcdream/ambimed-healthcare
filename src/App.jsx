@@ -7,6 +7,7 @@ import { RouteFallback } from './components/RouteFallback.jsx'
 import { WhatsAppFloat } from './components/WhatsAppFloat.jsx'
 
 const TermsPage = lazy(() => import('./components/TermsPage.jsx'))
+const CaregiverAppPage = lazy(() => import('./components/CaregiverAppPage.jsx'))
 const ClientAppRoutes = lazy(() =>
   import('./client-app/ClientAppRoutes.jsx').then((m) => ({ default: m.ClientAppRoutes })),
 )
@@ -31,6 +32,14 @@ export default function App() {
             element={
               <Suspense fallback={<RouteFallback />}>
                 <TermsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/caregiverapp"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <CaregiverAppPage />
               </Suspense>
             }
           />
