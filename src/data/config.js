@@ -13,10 +13,10 @@ export const config = {
   showAboutSection: false,
   // Set to true to show the "Our team" section; false to hide it
   showTeamSection: false,
-  // Replace with your Google Play Store app URL when ready
-  clientAppUrl: '#',
-  // Replace with your caregiver app URL when ready
-  caregiverAppUrl: '#',
+  clientAppUrl:
+    'https://play.google.com/store/apps/details?id=com.ambimed.healthcare.app&pcampaignid=web_share',
+  caregiverAppUrl:
+    'https://play.google.com/store/apps/details?id=com.ambimed.healthcare.caregiver&pcampaignid=web_share',
   // Optional: paths to QR code images in public/
   qrClientApp: '/assets/qr-placeholder.png',
   qrCaregiverApp: '/assets/qr-placeholder.png',

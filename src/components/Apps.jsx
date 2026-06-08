@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { config } from '../data/config'
 import './Apps.css'
 
 export function Apps() {
@@ -59,7 +60,7 @@ export function Apps() {
             </ul>
 
             <a
-              href="https://play.google.com/store/apps/details?id=com.ambimed.healthcare.app"
+              href={config.clientAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="play-badge-link"
@@ -91,7 +92,7 @@ export function Apps() {
             </ul>
 
             <a
-              href="https://play.google.com/store/apps/details?id=com.ambimed.healthcare.caregiver"
+              href={config.caregiverAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="play-badge-link"
