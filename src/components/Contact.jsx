@@ -2,13 +2,13 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { config } from '../data/config'
 import { TERMS_PDF_URL } from '../data/legal'
+import { cities } from '../data/cities'
 import './Contact.css'
 
 const LOGO_IMG = '/assets/ambimed-logo.png'
 
 const CONTACT = config.contact
 const SOCIAL = config.social
-const CITIES = config.citiesOperating ?? []
 
 export function Contact() {
   const telHref = `tel:${CONTACT.phone.replace(/\s/g, '')}`
@@ -111,8 +111,12 @@ export function Contact() {
             <div className="contact-ref-col">
               <h3 className="contact-ref-heading">Cities Operating</h3>
               <ul className="contact-ref-list contact-ref-list--cities">
-                {CITIES.map((city) => (
-                  <li key={city}>Ambimed {city}</li>
+                {cities.map((city) => (
+                  <li key={city.slug}>
+                    <Link to={`/home-nurse-services-${city.slug}`} className="contact-ref-company-link">
+                      Home Nursing in {city.displayName}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>

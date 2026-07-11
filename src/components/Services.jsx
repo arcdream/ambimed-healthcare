@@ -35,9 +35,9 @@ export function Services() {
           {services.map((item, i) => (
             <Link
               key={item.id}
-              to={`/app/book/${item.bookingServiceTypeId}`}
+              to={`/${item.slug}`}
               className="service-card-link"
-              aria-label={`Book ${item.title}`}
+              aria-label={`Learn about ${item.title}`}
             >
               <motion.article
                 className="service-card"
@@ -49,17 +49,20 @@ export function Services() {
               >
                 {item.image && (
                   <div className="service-card-image-wrap">
-                    <img src={item.image} alt="" />
+                    <img src={item.image} alt={item.imageAlt || item.title} loading="lazy" />
                   </div>
                 )}
                 <span className="service-icon" aria-hidden>{icons[item.icon] || '•'}</span>
                 <h3 className="service-title">{item.title}</h3>
                 <p className="service-desc">{item.description}</p>
-                <span className="service-card-cta">Book this service →</span>
+                <span className="service-card-cta">View service →</span>
               </motion.article>
             </Link>
           ))}
         </div>
+        <p className="services-more">
+          <Link to="/services">View all 20 services →</Link>
+        </p>
       </div>
     </section>
   )

@@ -49,6 +49,19 @@
   text-decoration: none;
 }
 
+.footer-link-a {
+  color: rgba(255,255,255,0.9);
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.25rem 0;
+}
+
+.footer-link-a:hover {
+  color: var(--color-bright);
+  text-decoration: none;
+}
+
 .footer-contact p {
   margin: 0;
   font-size: 0.9rem;
@@ -70,4 +83,8 @@
 
 @media (min-width: 640px) {
   .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; }
+}
+
+@media (min-width: 900px) {
+  .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; }
 }

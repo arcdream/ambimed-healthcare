@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { config } from '../data/config'
+import { seoServices } from '../data/seoServices'
+import { cities } from '../data/cities'
 
 const quickLinksBase = [
   { id: 'services', label: 'Services' },
@@ -14,6 +17,8 @@ export function Footer() {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
+
+  const topServices = seoServices.slice(0, 6)
 
   return (
     <motion.footer
@@ -39,6 +44,35 @@ export function Footer() {
                 <button type="button" className="footer-link" onClick={() => scrollTo(link.id)}>
                   {link.label}
                 </button>
+              </li>
+            ))}
+            <li>
+              <Link to="/blog" className="footer-link-a">Blog</Link>
+            </li>
+          </ul>
+        </div>
+        <div className="footer-links">
+          <p className="footer-section-heading" id="footer-services-heading">
+            Our services
+          </p>
+          <ul aria-labelledby="footer-services-heading">
+            {topServices.map((s) => (
+              <li key={s.slug}>
+                <Link to={`/${s.slug}`} className="footer-link-a">{s.shortTitle}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="footer-links">
+          <p className="footer-section-heading" id="footer-locations-heading">
+            Locations
+          </p>
+          <ul aria-labelledby="footer-locations-heading">
+            {cities.slice(0, 6).map((c) => (
+              <li key={c.slug}>
+                <Link to={`/home-nurse-services-${c.slug}`} className="footer-link-a">
+                  {c.displayName}
+                </Link>
               </li>
             ))}
           </ul>

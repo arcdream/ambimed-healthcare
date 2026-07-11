@@ -1,6 +1,7 @@
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
+import { HomeSeoHead } from './components/SeoHead'
 import MarketingBelowFold from './MarketingBelowFold.jsx'
 
 import './components/Header.css'
@@ -10,6 +11,7 @@ import './components/Footer.css'
 export default function MarketingSite() {
   return (
     <>
+      <HomeSeoHead />
       <Header />
       <main>
         <Hero />

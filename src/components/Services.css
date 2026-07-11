@@ -107,3 +107,13 @@
 @media (min-width: 900px) {
   .services-grid { grid-template-columns: repeat(4, 1fr); }
 }
+
+.services-more {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.services-more a {
+  font-weight: 600;
+  text-decoration: none;
+}

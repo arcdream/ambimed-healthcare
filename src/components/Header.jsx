@@ -9,10 +9,12 @@ const LOGO_IMG = '/assets/ambimed-logo.png'
 const marketingNavBase = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
+  { to: '/services', label: 'All Services', isRoute: true },
   { id: 'services-pricing', label: 'Our Pricing' },
   { id: 'about', label: 'About' },
   { id: 'caregivers', label: 'Caregivers' },
   { id: 'testimonials', label: 'Feedback' },
+  { to: '/blog', label: 'Blog', isRoute: true },
   { id: 'apps', label: 'Our Apps' },
   { id: 'team', label: 'Team' },
   { id: 'achievements', label: 'Recognition' },
@@ -169,11 +171,17 @@ export function Header() {
                   {item.label}
                 </Link>
               ))
-            : marketingNav.map((link) => (
-                <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
-                  {link.label}
-                </button>
-              ))}
+            : marketingNav.map((link) =>
+                link.isRoute ? (
+                  <Link key={link.to} to={link.to} className="nav-link">
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
+                    {link.label}
+                  </button>
+                ),
+              )}
           {!isApp && (
             <Link to="/app/booking" className="nav-link nav-link--cta">
               Book care
@@ -217,11 +225,17 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))
-              : marketingNav.map((link) => (
-                  <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
-                    {link.label}
-                  </button>
-                ))}
+              : marketingNav.map((link) =>
+                  link.isRoute ? (
+                    <Link key={link.to} to={link.to} className="nav-link" onClick={() => setOpen(false)}>
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button key={link.id} type="button" className="nav-link" onClick={() => scrollTo(link.id)}>
+                      {link.label}
+                    </button>
+                  ),
+                )}
             {!isApp && (
               <Link to="/app/booking" className="nav-link nav-link--cta" onClick={() => setOpen(false)}>
                 Book care
